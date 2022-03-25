@@ -16,9 +16,9 @@ import com.wsh.repo.RepositoryUser;
 @Component
 public class CustomAuthencationProvider implements AuthenticationProvider {
 	@Autowired
-	private RepositoryUser repo;
-	@Autowired
 	private Logger log;
+	@Autowired
+	private RepositoryUser repo;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {

@@ -31,7 +31,7 @@ public class InitDB {
 		user.setName("user");
 		user.setPassword("password");
 		user.setRole("ADMIN");
-		 
+
 		userRepository.save(user);
 	}
 }

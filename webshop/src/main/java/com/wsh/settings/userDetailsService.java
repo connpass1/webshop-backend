@@ -10,13 +10,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.wsh.repo.RepositoryUser;
- 
+
  @Service
 public class userDetailsService implements UserDetailsService {
     @Autowired
-    private  RepositoryUser userRepo;
-    @Autowired
     private  Logger log;
+    @Autowired
+    private  RepositoryUser userRepo;
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
          com.wsh.model.User myUser= userRepo.findByName(userName);
@@ -24,10 +24,10 @@ public class userDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Unknown userfffffffff: "+userName);
      }
         log.debug("-------------------------------userName");
-        
+
         UserDetails user = User.builder()
         		.username(myUser.getName())
-        		 
+
                 .password(myUser.getPassword())
                 .roles(myUser.getRole())
                 .build();

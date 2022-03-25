@@ -1,5 +1,5 @@
 package com.wsh.settings;
- 
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,23 +10,23 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
- 
+
 
 @EnableWebSecurity(debug = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private  UserDetailsService userDetailsService;
-
-    @Autowired
     private  CustomAuthencationProvider customAuthencationProvider;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
+    @Autowired
+    private  UserDetailsService userDetailsService;
 
-        return NoOpPasswordEncoder.getInstance();
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+       //и добавляем его сюда
+       auth.authenticationProvider(customAuthencationProvider);
     }
 
-    
+
 
 
     @Override
@@ -35,17 +35,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**","/*/remove/**" ).hasAnyRole("USER", "ADMIN")
                 .antMatchers("/test" ).hasAnyRole("USER", "ADMIN")
                 .antMatchers("/user/list","/item/list","/cat/list" ).hasAnyRole("USER", "ADMIN")
-                
+
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/**").permitAll().and().logout()
 
                 .and().formLogin();
 //todo
     }
-    
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-       //и добавляем его сюда
-       auth.authenticationProvider(customAuthencationProvider);
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+
+        return NoOpPasswordEncoder.getInstance();
     }
 }

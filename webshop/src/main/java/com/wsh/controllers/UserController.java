@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wsh.model.Item;
 import com.wsh.model.User;
-import com.wsh.repo.RepositoryItem;
 import com.wsh.repo.RepositoryUser;
 
 @RequestMapping("user")
@@ -24,7 +22,7 @@ public class UserController {
 
 	@GetMapping("/add/{name}/{password}" )
 		@ResponseBody
-		public    User   add(@PathVariable String name,@PathVariable String password ) { 
+		public    User   add(@PathVariable String name,@PathVariable String password ) {
 			return  repo.save(new User(name,password));
 		}
 
@@ -53,5 +51,5 @@ public class UserController {
 		 repo.deleteById(id);
 			return "user deleted"+id;
 		}
-	 
+
 }

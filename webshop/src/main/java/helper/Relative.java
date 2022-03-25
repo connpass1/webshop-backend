@@ -12,10 +12,10 @@ public class Relative {
 
 	public static Set<Relative> makeChildren(Set<Item> items) {
 		Set<Relative> set=new HashSet<>();
-	
+
 		for( Item it:items ) set.add(new Relative(it.getId(),it.getName())) ;
 		return set;
-	
+
 	}
 	@Getter
 	private long id;

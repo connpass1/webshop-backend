@@ -25,35 +25,35 @@ public class AbstractItem implements Serializable {
 
 	private static final long serialVersionUID = -3261056483276418061L;
 	@Getter
+	@Setter
+	private String icon;
+	@Getter
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+
 	@Getter
 	@Setter
 	@Column(unique=true)
 	private String name;
-	
-	@Getter
-	@Setter
-	private String icon;
-	@Getter
-	@Setter
-	private String title;
-	
 	@Setter
 	@ManyToOne
 	@JoinColumn(name = "parent")
 	private Category parent;
+
+	@Getter
+	@Setter
+	private String title;
 	public AbstractItem(String name) {
 		this.name = name;
 	}
-	
+
 	@Transient
 	public AbstractItem changeParent(Category parent) {
 		 this.parent=parent;
 		return this;}
-	
-	
+
+
 	@JsonProperty("parent")
 	public Relative parent() {
 		if (parent == null)
