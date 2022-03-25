@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.wsh.model.Category;
 import com.wsh.model.User;
 import com.wsh.repo.RepositoryCategory;
-import com.wsh.repo.UserRepository;
+import com.wsh.repo.RepositoryUser;
 
 @Component
 public class InitDB {
@@ -17,7 +17,7 @@ public class InitDB {
 	@Autowired
 	private RepositoryCategory repositoryCategory;
 	@Autowired
-	private UserRepository userRepository;
+	private RepositoryUser userRepository;
 
 	@Transient
 	@PostConstruct
@@ -31,7 +31,7 @@ public class InitDB {
 		user.setName("user");
 		user.setPassword("password");
 		user.setRole("ADMIN");
-		user.setPosition("jjjj");
+		 
 		userRepository.save(user);
 	}
 }

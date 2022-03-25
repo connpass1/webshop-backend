@@ -9,7 +9,12 @@ import com.wsh.model.User;
  
 
 	@Repository
-	public interface UserRepository extends JpaRepository<User, Long> {
+	public interface RepositoryUser extends JpaRepository<User, Long> {
 	    User findByName(String name);
+	    User findById(long id);
+		@SuppressWarnings("unchecked")
+		User save( User user);
+		
+		
 	}
  

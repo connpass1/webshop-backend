@@ -15,7 +15,6 @@ public class MainController {
 		@ResponseBody
 		public    String   test( ) {
 			return "MainController test";
-
 		}
 	  
 }

@@ -2,12 +2,14 @@ package com.wsh.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +30,16 @@ public class AbstractItem implements Serializable {
 	private Long id;
 	@Getter
 	@Setter
+	@Column(unique=true)
 	private String name;
+	
+	@Getter
+	@Setter
+	private String icon;
+	@Getter
+	@Setter
+	private String title;
+	
 	@Setter
 	@ManyToOne
 	@JoinColumn(name = "parent")
@@ -36,6 +47,13 @@ public class AbstractItem implements Serializable {
 	public AbstractItem(String name) {
 		this.name = name;
 	}
+	
+	@Transient
+	public AbstractItem changeParent(Category parent) {
+		 this.parent=parent;
+		return this;}
+	
+	
 	@JsonProperty("parent")
 	public Relative parent() {
 		if (parent == null)

@@ -28,7 +28,7 @@ public class Category extends AbstractItem {
 	@JsonManagedReference
 	private Set<Item> items = new HashSet<>();
 
-
+     
 
 	public Category(String name ) {
 		super(name);
@@ -46,7 +46,13 @@ public class Category extends AbstractItem {
 		items.add(item);
 		return this;}
 
-
+	@Transient
+	public Category removeItem(Item item) {
+		items.remove(item);
+		return this;}
+	
+	
+	
 	@JsonProperty("children")
 	public Set<Relative> children(){
 		return Relative.makeChildren(items); }

@@ -11,12 +11,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.wsh.repo.UserRepository;
+import com.wsh.repo.RepositoryUser;
 
 @Component
 public class CustomAuthencationProvider implements AuthenticationProvider {
 	@Autowired
-	private UserRepository repo;
+	private RepositoryUser repo;
 	@Autowired
 	private Logger log;
 

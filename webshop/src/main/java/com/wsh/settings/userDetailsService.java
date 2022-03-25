@@ -9,12 +9,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.wsh.repo.UserRepository;
+import com.wsh.repo.RepositoryUser;
  
  @Service
 public class userDetailsService implements UserDetailsService {
     @Autowired
-    private  UserRepository userRepo;
+    private  RepositoryUser userRepo;
     @Autowired
     private  Logger log;
     @Override
