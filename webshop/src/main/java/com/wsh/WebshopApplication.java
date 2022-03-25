@@ -23,10 +23,10 @@ public class WebshopApplication {
 	        return LoggerFactory.getLogger("application");
 	    }
 
-	 @Bean
-	    public WebSecurityCustomizer webSecurityCustomizer() {
-	        return (web) -> web.ignoring().antMatchers("/**","/cat/**", "/item/**");
-	    }
+//	 @Bean
+//	    public WebSecurityCustomizer webSecurityCustomizer() {
+//	        return (web) -> web.ignoring().antMatchers("/index.html","/static/**","/","/cat/**", "/item/**");
+//	    }
 
 }
 
