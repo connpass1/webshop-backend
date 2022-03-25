@@ -1,6 +1,5 @@
 package com.wsh.model;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,38 +16,47 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @NoArgsConstructor
 @Entity
-@Table(name="userok")
-public class  User {
-	@Setter @Getter
+@Table(name = "userok")
+public class User {
+	@Setter
+	@Getter
 	private String adress;
 	@Getter
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
+	@JoinColumn(name = "order_id")
 	private Set<CartOrder> cartOrder = new HashSet<>();
-	@Setter @Getter
+	@Setter
+	@Getter
+	@Column(unique = true)
 	private String email;
 
 	@Getter
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
-	@Setter @Getter  @Column(unique=true)
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	long id;
+	@Getter
+	@Column(unique = true)
+	private String name;
+	@Setter
+	@Getter
+	private String password;
+	@Setter
+	@Getter
+	private Long phone;
+	@Setter
+	@Getter
+	private String role;
 
-	@Setter @Getter
-    private String password;
-	@Setter @Getter
-	private Long phone ;
-	@Setter @Getter
-    private String role;
 	public User(String name, String password) {
 		super();
 		this.name = name;
 		this.password = password;
-		this.role="USER";
+		this.role = "USER";
 	}
 
+	 
 
 }

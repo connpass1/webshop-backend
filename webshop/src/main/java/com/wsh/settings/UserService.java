@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.wsh.repo.RepositoryUser;
 
  @Service
-public class userDetailsService implements UserDetailsService {
+public class UserService implements UserDetailsService  {
     @Autowired
     private  Logger log;
     @Autowired

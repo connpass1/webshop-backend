@@ -24,7 +24,7 @@ public class ItemController {
 		@ResponseBody
 		public    String   add(@PathVariable String id ) {
 
-		 repo.save(new Item(id));
+		// repo.save(new Item(id));
 			return "ItemController"+id;
 		}
 

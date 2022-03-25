@@ -38,13 +38,13 @@ public class CategoryController {
 		Category root = repo.findByName("root");
 		 log.error("root"+(root==null));
 
-		 Item it= new Item("tttt");
+		 Item it= new Item(id,root );
 		it= repoitem.save(it);
-		Category c = repo.save(new Category(id,root).addItem(it));
+		Category c = repo.save(new Category(id,root).addChildItem(it));
 
 		it. setParent(c);it= repoitem.save(it);
-		 c = repo.save(new Category(id).addItem(it));
-			 return c;
+		  
+			 return repo.save(c); 
 		}
 
 	@GetMapping("/id/{id}" )
