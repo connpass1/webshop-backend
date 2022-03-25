@@ -19,13 +19,13 @@ public class WebshopApplication {
 		SpringApplication.run(WebshopApplication.class, args);
 	}
 	 @Bean
-	    public WebSecurityCustomizer webSecurityCustomizer() {
-	        return (web) -> web.ignoring().antMatchers("/**","/cat/**", "/item/**");
+	    public Logger logger(){
+	        return LoggerFactory.getLogger("application");
 	    }
 
 	 @Bean
-	    public Logger logger(){
-	        return LoggerFactory.getLogger("application");
+	    public WebSecurityCustomizer webSecurityCustomizer() {
+	        return (web) -> web.ignoring().antMatchers("/**","/cat/**", "/item/**");
 	    }
 
 }

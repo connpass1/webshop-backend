@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wsh.model.Item;
-
 import com.wsh.repo.RepositoryItem;
 
 @RequestMapping("item")
@@ -21,11 +20,18 @@ public class ItemController {
 	@Autowired
 	private RepositoryItem repo;
 
-	@GetMapping(  "/test" )
+	@GetMapping("/add/{id}" )
 		@ResponseBody
-		public    String   test( ) {
-			return "ItemController test";
+		public    String   add(@PathVariable String id ) {
 
+		 repo.save(new Item(id));
+			return "ItemController"+id;
+		}
+
+	@GetMapping("/id/{id}" )
+		@ResponseBody
+		public    Item   id(@PathVariable long id ) {
+			return repo.findById(id);
 		}
 
 	@GetMapping("/list" )
@@ -33,12 +39,6 @@ public class ItemController {
 		public    List<Item>   list( ) {
 			return repo.findAll();
 
-		}
-
-	@GetMapping("/id/{id}" )
-		@ResponseBody
-		public    Item   id(@PathVariable long id ) {
-			return repo.findById(id);
 		}
 
 	@GetMapping("/name/{id}" )
@@ -53,12 +53,11 @@ public class ItemController {
 		 repo.deleteById(id);
 			return "ItemController"+id;
 		}
-	@GetMapping("/add/{id}" )
+	@GetMapping(  "/test" )
 		@ResponseBody
-		public    String   add(@PathVariable String id ) {
-		 
-		 repo.save(new Item(id));
-			return "ItemController"+id;
+		public    String   test( ) {
+			return "ItemController test";
+
 		}
 
 }

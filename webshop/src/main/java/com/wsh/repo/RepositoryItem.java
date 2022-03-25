@@ -9,14 +9,14 @@ import com.wsh.model.Item;
 
 public interface RepositoryItem extends CrudRepository<Item, Long>, JpaSpecificationExecutor<Item> {
 
+	void deleteById(long id);
+
 	@Override
 	List<Item> findAll();
 
 	Item findById(long id);
 
 	Item findByName(String name);
-
-	void deleteById(long id);
 
 
 }

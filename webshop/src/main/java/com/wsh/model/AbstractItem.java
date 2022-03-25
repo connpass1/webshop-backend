@@ -9,13 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import helper.Relative;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @Entity
 public class AbstractItem implements Serializable {
@@ -28,22 +29,18 @@ public class AbstractItem implements Serializable {
 	@Getter
 	@Setter
 	private String name;
-
 	@Setter
 	@ManyToOne
-	@JoinColumn(name = "category")
-	private Category category;
-
+	@JoinColumn(name = "parent")
+	private Category parent;
 	public AbstractItem(String name) {
 		this.name = name;
 	}
-
 	@JsonProperty("parent")
-	public Relative parents() {
-		if (category == null)
+	public Relative parent() {
+		if (parent == null)
 			return null;
-
-		return new Relative(category.getId(), category.getName());
+		return new Relative(parent.getId(), parent.getName());
 	}
 
 }

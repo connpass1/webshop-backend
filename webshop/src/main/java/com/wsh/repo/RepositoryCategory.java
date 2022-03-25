@@ -9,12 +9,12 @@ import com.wsh.model.Category;
 
 public interface RepositoryCategory extends CrudRepository<Category, Long>, JpaSpecificationExecutor<Category> {
 
+	void deleteById(long id);
+
 	@Override
 	List<Category> findAll();
 
 	Category findById(long id);
 
 	Category findByName(String name);
-
-	void deleteById(long id);
 }

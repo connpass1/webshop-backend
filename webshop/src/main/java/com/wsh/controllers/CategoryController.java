@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.wsh.repo.RepositoryItem;
 public class CategoryController {
 
 
+	@Autowired Logger log;
 	@Autowired
 	private RepositoryCategory repo;
 
@@ -28,11 +30,27 @@ public class CategoryController {
 	private RepositoryItem repoitem;
 
 
-	@GetMapping(  "/test" )
+	@Transactional
+	@GetMapping("/add/{id}" )
 		@ResponseBody
-		public    String   test( ) {
-			return "CategoryController test";
+		public    Category   add(@PathVariable String id )   {
 
+		Category root = repo.findByName("root");
+		 log.error("root"+(root==null));
+
+		 Item it= new Item("tttt");
+		it= repoitem.save(it);
+		Category c = repo.save(new Category(id,root).addItem(it));
+
+		it. setParent(c);it= repoitem.save(it);
+		 c = repo.save(new Category(id).addItem(it));
+			 return c;
+		}
+
+	@GetMapping("/id/{id}" )
+		@ResponseBody
+		public    Category   id(@PathVariable long id ) {
+			return repo.findById(id);
 		}
 
 	@GetMapping("/list" )
@@ -40,12 +58,6 @@ public class CategoryController {
 		public    List<Category>   list( ) {
 			return repo.findAll();
 
-		}
-
-	@GetMapping("/id/{id}" )
-		@ResponseBody
-		public    Category   id(@PathVariable long id ) {
-			return repo.findById(id);
 		}
 
 	@GetMapping("/name/{id}" )
@@ -60,16 +72,11 @@ public class CategoryController {
 		 repo.deleteById(id);
 			return "CategoryController"+id;
 		}
-	@Transactional
-	@GetMapping("/add/{id}" )
+	@GetMapping(  "/test" )
 		@ResponseBody
-		public    Category   add(@PathVariable String id ) { 
-		 Item it= new Item("tttt");
-		it= repoitem.save(it);
-		Category c = repo.save(new Category(id).addItem(it));
-		it. setCategory(c);it= repoitem.save(it);
-		 c = repo.save(new Category(id).addItem(it));
-			 return c;
+		public    String   test( ) {
+			return "CategoryController test";
+
 		}
 
 }
