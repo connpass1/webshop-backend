@@ -12,9 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+@JsonInclude(  JsonInclude.Include.NON_EMPTY)
 @NoArgsConstructor
 @Entity
 public class CartOrder {

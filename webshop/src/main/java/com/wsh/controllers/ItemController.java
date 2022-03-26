@@ -28,7 +28,7 @@ public class ItemController {
 			return "ItemController"+id;
 		}
 
-	@GetMapping("/id/{id}" )
+	@GetMapping("/{id}" )
 		@ResponseBody
 		public    Item   id(@PathVariable long id ) {
 			return repo.findById(id);
@@ -57,7 +57,6 @@ public class ItemController {
 		@ResponseBody
 		public    String   test( ) {
 			return "ItemController test";
-
 		}
 
 }

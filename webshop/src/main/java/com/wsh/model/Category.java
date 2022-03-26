@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 @NoArgsConstructor
 @Entity
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(  JsonInclude.Include.NON_EMPTY)
 
 public class Category implements Serializable {
 
@@ -84,9 +84,15 @@ public class Category implements Serializable {
 	private Set<Item> childrenItem  = new HashSet<Item>();
 	 
 	@Transient
-	public Category addChildItem(Item child) {
+	public Category addChild(Item child) {
 		childrenItem.add(child);
 		return this;}
+	@Transient
+	public Category addChild(Category child) {
+		childrenCategory.add(child);
+		return this;}
+	
+	
 
 	@JsonProperty("childrenItem")
 	public Set<Relative>childrenItem(){
@@ -115,9 +121,11 @@ public class Category implements Serializable {
 
 
 	public Category(String name, Category parent) {
-		 
+		
 		this.name = name;
 		this.parent = parent;
+		if(parent!=null)parent.addChild(this);
+		 
 	}
 
 }

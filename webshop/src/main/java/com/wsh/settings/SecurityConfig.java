@@ -29,9 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web
-            .ignoring()
-            .antMatchers("/*/**");
+      //  web
+      //      .ignoring()
+      //      .antMatchers("/*/**");
     }
     
 
@@ -41,11 +41,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**","/*/remove/**" ).hasAnyRole("USER", "ADMIN")
                 .antMatchers("/test" ).hasAnyRole("USER", "ADMIN")
                 .antMatchers("/user/list","/item/list","/cat/list" ).hasAnyRole("USER", "ADMIN")
-
+                 
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/**").permitAll().and().logout()
-
-                .and().formLogin();
+                .and().csrf().disable()
+                .authorizeRequests().anyRequest().authenticated()
+                .and().httpBasic()
+                .and().sessionManagement().disable();
+                 
+               // .and().exceptionHandling().accessDeniedPage("/403"); //work
+                 
+                
+                
+               // .and().formLogin();
 //todoZ
     }
 

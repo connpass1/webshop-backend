@@ -8,22 +8,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
+ 
 import com.wsh.repo.RepositoryUser;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
  @Service
 public class UserService implements UserDetailsService  {
-    @Autowired
-    private  Logger log;
+   
     @Autowired
     private  RepositoryUser userRepo;
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
          com.wsh.model.User myUser= userRepo.findByName(userName);
         if (myUser == null) {
-            throw new UsernameNotFoundException("Unknown userfffffffff: "+userName);
+            throw new UsernameNotFoundException("Unknown user: "+userName);
      }
-        log.debug("-------------------------------userName");
+        log.debug( userName );
 
         UserDetails user = User.builder()
         		.username(myUser.getName())

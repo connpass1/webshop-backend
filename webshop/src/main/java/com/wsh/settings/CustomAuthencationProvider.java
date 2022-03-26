@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.wsh.repo.RepositoryUser;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Component
 public class CustomAuthencationProvider implements AuthenticationProvider {
-	@Autowired
-	private Logger log;
+ 
 	@Autowired
 	private RepositoryUser repo;
 

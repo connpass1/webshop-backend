@@ -34,16 +34,14 @@ import helper.Relative;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-@JsonInclude(JsonInclude.Include.NON_NULL)
-
+@JsonInclude(  JsonInclude.Include.NON_EMPTY)
+ 
 @NoArgsConstructor
 @Entity
 public class Item  implements Serializable  {/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
 	
 	@Getter
 	@Setter
@@ -55,7 +53,7 @@ public class Item  implements Serializable  {/**
 
 	@Getter
 	@Setter
-	@Column(unique=true)
+	 
 	private String name;
 	@Setter
 	@ManyToOne
@@ -65,10 +63,6 @@ public class Item  implements Serializable  {/**
 	@Getter
 	@Setter
 	private String title;
- 
-	
-
-
 	@JsonProperty("parent")
 	public Relative parent() {
 		if (parent == null)
@@ -79,7 +73,8 @@ public class Item  implements Serializable  {/**
 @Getter @Setter
 private   int amount=0;
 
-
+@Getter @Setter
+private   String caption ;
 @Getter @Setter
 private   String description ;
 @Getter @Setter
@@ -93,7 +88,7 @@ private   String property ;
 public Item(String name, Category parent) { 
 	this.name = name;
 	this.parent = parent;
-	parent.getChildrenItem().add(this);
+	parent.addChild(this); 
 } 
 
 }

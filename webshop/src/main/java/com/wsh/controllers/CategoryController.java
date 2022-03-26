@@ -12,17 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+ 
 import com.wsh.model.Category;
 import com.wsh.model.Item;
 import com.wsh.repo.RepositoryCategory;
 import com.wsh.repo.RepositoryItem;
 
-@RequestMapping("cat")
-@RestController
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
+@RequestMapping("catalog")
+@RestController 
+ 
 public class CategoryController {
 
 
-	@Autowired Logger log;
+	
 	@Autowired
 	private RepositoryCategory repo;
 
@@ -40,16 +44,17 @@ public class CategoryController {
 
 		 Item it= new Item(id,root );
 		it= repoitem.save(it);
-		Category c = repo.save(new Category(id,root).addChildItem(it));
+		Category c = repo.save(new Category(id,root).addChild (it));
 
 		it. setParent(c);it= repoitem.save(it);
 		  
 			 return repo.save(c); 
 		}
 
-	@GetMapping("/id/{id}" )
+	@GetMapping("{id}" )
 		@ResponseBody
 		public    Category   id(@PathVariable long id ) {
+		if(id==0)return repo.findByName("root");
 			return repo.findById(id);
 		}
 
@@ -77,6 +82,4 @@ public class CategoryController {
 		public    String   test( ) {
 			return "CategoryController test";
 
-		}
-
-}
+	}	}

@@ -19,40 +19,32 @@ public class InitDB {
 	@Autowired
 	private RepositoryCategory repositoryCategory;
 	@Autowired
-	private RepositoryUser userRepository;
-	@Autowired
-	private RepositoryItem  itemRepository;
+	private RepositoryUser userRepository; 
 	@Transient
 	@PostConstruct
 	private void postConstruct() {
 		Category root = repositoryCategory.findByName("root");
 		if (root != null)
 			return;
-		root = new Category("root",null);
-		repositoryCategory.save(root); 
-		 for(int i=0;i<10;i++) {
-			Category level1Category  = new Category("Категория "+i,root );	
-			repositoryCategory.save(level1Category );
-			for(int j=0;j<10;j++) {
-				Category  level2Category  = new Category("Категория level2"+i +""+j  ,level1Category );	
-				repositoryCategory.save(level2Category);
-				for(int k=0;k<10;k++) {
-					Item l  = new Item("товар "+i+"-"+j+"-" +k ,level2Category); 
-					l.setTitle("титл товара");
-					l.setDescription("Описание");
-					itemRepository.save(l);
-					level1Category.addChildItem(l);
-					repositoryCategory.save(level1Category);
-				} 
+		root = new Category("root", null);
+
+		for (int i = 0; i < 10; i++) {
+			Category сat1 = new Category("Категория a " + i, root);
+			for (int j = 0; j < 10; j++) {
+				Category с1 = new Category("Категория b " + (i*10+j), сat1);
+				for (int l = 0; l < 10; l++) {  
+				Item it = new Item("Продукт №" + (i*100+j*10+l), с1);
+					it.setAmount(1000);  
+					it.setPrice(i*100-j*10+3*l)  ;
+					it.setDescription("хорошая вещь"); 
+					it.setCaption("Заголовок");
+					it.setProperty("не боится морозов");;
+					} 
 			} 
-			repositoryCategory.save(level1Category);
-			
 		}
 		repositoryCategory.save(root);
-		 
-		
-		User user = new User("user" ,"password");  
-		user.setRole("ADMIN");  
+		User user = new User("user", "password");
+		user.setRole("ADMIN");
 		userRepository.save(user);
 	}
 }

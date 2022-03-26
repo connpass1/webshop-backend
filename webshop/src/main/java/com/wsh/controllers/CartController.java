@@ -17,7 +17,7 @@ import com.wsh.repo.RepositoryCartOrder;
 public class CartController {
 
 
-	@Autowired Logger log;
+	 
 
 	@Autowired
 	private RepositoryCartOrder repo ;
