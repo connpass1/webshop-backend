@@ -29,26 +29,23 @@ public class InitDB {
 		if (root != null)
 			return;
 		root = new Category("root",null);
-		repositoryCategory.save(root);
+		repositoryCategory.save(root); 
 		 for(int i=0;i<10;i++) {
-			Category r  = new Category("Категория "+i,root );	
-			repositoryCategory.save(r);
-			//root.addChildrenCategory(r); 
+			Category level1Category  = new Category("Категория "+i,root );	
+			repositoryCategory.save(level1Category );
 			for(int j=0;j<10;j++) {
-				Category r1  = new Category("Категория "+i+""+j ,r );	
-				repositoryCategory.save(r1);
-				r.addChildrenCategory(r1);
+				Category  level2Category  = new Category("Категория level2"+i +""+j  ,level1Category );	
+				repositoryCategory.save(level2Category);
 				for(int k=0;k<10;k++) {
-					Item l  = new Item("товар "+i+""+j+"" +k ,r);
-					 
-					l.setTitle("титл товара"); 
+					Item l  = new Item("товар "+i+"-"+j+"-" +k ,level2Category); 
+					l.setTitle("титл товара");
+					l.setDescription("Описание");
 					itemRepository.save(l);
-					r.addChildItem(l);
-					repositoryCategory.save(r);
-				}
-				
-			}
-			//repositoryCategory.save(r);
+					level1Category.addChildItem(l);
+					repositoryCategory.save(level1Category);
+				} 
+			} 
+			repositoryCategory.save(level1Category);
 			
 		}
 		repositoryCategory.save(root);

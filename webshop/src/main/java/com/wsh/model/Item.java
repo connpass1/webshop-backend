@@ -66,10 +66,7 @@ public class Item  implements Serializable  {/**
 	@Setter
 	private String title;
  
-	@Transient
-	public  Item changeParent(Category parent) {
-		 this.parent=parent;
-		return this;}
+	
 
 
 	@JsonProperty("parent")
@@ -93,10 +90,10 @@ private   int price=0;
 @Getter @Setter
 private   String property ;
 
-public Item(String name, Category parent) {
-	 
+public Item(String name, Category parent) { 
 	this.name = name;
 	this.parent = parent;
+	parent.getChildrenItem().add(this);
 } 
 
 }

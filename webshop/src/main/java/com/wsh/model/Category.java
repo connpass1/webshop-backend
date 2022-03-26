@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -60,6 +59,7 @@ public class Category implements Serializable {
 	@Transient
 	public  Category changeParent(Category parent) {
 		 this.parent=parent;
+		 parent.childrenCategory.add(this);
 		return this;}
 
 
@@ -70,15 +70,6 @@ public class Category implements Serializable {
 		return new Relative(parent.getId(), parent.getName( ));
 	}
 	
-	 
-	
-	
-
-//	@Getter
-//	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "items_id")
-//	@JsonManagedReference
-//	private Set<Item> childrenItems = new HashSet<>();
 	
 	@Getter
 	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,7 +79,7 @@ public class Category implements Serializable {
 
 	@Getter
 	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "itemd_id")
+    @JoinColumn(name = "item_cat_id")
 	@JsonManagedReference
 	private Set<Item> childrenItem  = new HashSet<Item>();
 	 
@@ -109,10 +100,7 @@ public class Category implements Serializable {
 		return this;}
 
  
-	@Transient
-	public Category addChildrenCategory(Category  child) {
-		childrenCategory .add(child);
-		return this;}
+
 
 	@JsonProperty("childrenCategory")
 	public Set<Relative> children(){

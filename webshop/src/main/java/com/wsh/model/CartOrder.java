@@ -25,7 +25,7 @@ public class CartOrder {
 
 	@Getter
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_order_id")
 	private Set<Item> items = new HashSet<>();
 
 	@Getter
