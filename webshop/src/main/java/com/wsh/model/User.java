@@ -1,65 +1,38 @@
 package com.wsh.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Entity
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Data
+@AllArgsConstructor
+@Builder
 @Table(name = "userok")
-@JsonInclude(  JsonInclude.Include.NON_EMPTY)
 public class User {
-	@Setter
-	@Getter
-	private String adress;
-	@Getter
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "order_id")
-	private Set<CartOrder> cartOrder = new HashSet<>();
-	@Setter
-	@Getter
-	@Column(unique = true)
-	private String email;
 
-	@Getter
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	long id;
-	@Getter
-	@Column(unique = true)
-	private String name;
-	@Setter
-	@Getter
-	private String password;
-	@Setter
-	@Getter
-	private Long phone;
-	@Setter
-	@Getter
-	private String role;
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "profile_id")
+    private final Profile profile = new Profile();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    @Setter(AccessLevel.NONE)
+    private final Set<CartOrder> cartOrder = new LinkedHashSet<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    long id;
+    @Column(length = 20, unique = true)
+    private String name;
+    @Column(length = 25)
+    private String password;
+    @Column(length = 5)
+    private String role = "USER";
 
-	public User(String name, String password) {
-		super();
-		this.name = name;
-		this.password = password;
-		this.role = "USER";
-	}
-
-	 
 
 }

@@ -1,62 +1,63 @@
 package com.wsh.controllers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.wsh.model.Item;
-import com.wsh.repo.RepositoryItem;
+import com.wsh.repo.ItemRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("item")
 @RestController
+@Slf4j
 public class ItemController {
+    @Autowired
+    private ItemRepository repo;
+
+    @GetMapping("/add/{id}")
+    @ResponseBody
+    public String add(@PathVariable String id) {
+        return "ItemController" + id;
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public Item id(@PathVariable long id) {
+        return repo.findById(id);
+    }
+
+    @ResponseBody
+    @GetMapping("all")
+    public Page<Item> listAll() {
+        return repo.findByIdIsNotNullOrderByCategory_Parent_IdAscPriceAsc(PageRequest.of(1, 20));
+    }
+
+    @ResponseBody
+    @GetMapping("all/{page}")
+    public Page<Item> listAll1(@PathVariable int page) {
+        return repo.findByIdIsNotNullOrderByCategory_Parent_IdAscPriceAsc(PageRequest.of(page, 20));
+    }
 
 
-	@Autowired
-	private RepositoryItem repo;
+    @ResponseBody
+    @GetMapping("list/{category_id}")
+    public Page<Item> listAll1(@PathVariable long category_id) {
+        return repo.findByCategory_IdEqualsOrderByCategory_IdAscPriceAscNameAsc(category_id, PageRequest.of(1, 20));
+    }
 
-	@GetMapping("/add/{id}" )
-		@ResponseBody
-		public    String   add(@PathVariable String id ) {
 
-		// repo.save(new Item(id));
-			return "ItemController"+id;
-		}
+    @ResponseBody
+    @GetMapping("cat/{category_id}/{page}")
+    public Page<Item> listByCategoryName1(@PathVariable long category_id, @PathVariable int page) {
+        return repo.findByCategory_IdEqualsOrderByCategory_IdAscPriceAscNameAsc(category_id, PageRequest.of(page, 10));
+    }
 
-	@GetMapping("/{id}" )
-		@ResponseBody
-		public    Item   id(@PathVariable long id ) {
-			return repo.findById(id);
-		}
 
-	@GetMapping("/list" )
-		@ResponseBody
-		public    List<Item>   list( ) {
-			return repo.findAll();
-
-		}
-
-	@GetMapping("/name/{id}" )
-		@ResponseBody
-		public    Item   name(@PathVariable String id ) {
-			return repo.findByName(id);
-		}
-	@GetMapping("/remove/{id}" )
-		@ResponseBody
-		public    String   remove(@PathVariable long id ) {
-
-		 repo.deleteById(id);
-			return "ItemController"+id;
-		}
-	@GetMapping(  "/test" )
-		@ResponseBody
-		public    String   test( ) {
-			return "ItemController test";
-		}
-
+    @GetMapping("/remove/{id}")
+    @ResponseBody
+    public String remove(@PathVariable long id) {
+        repo.deleteById(id);
+        return "ItemController" + id;
+    }
 }

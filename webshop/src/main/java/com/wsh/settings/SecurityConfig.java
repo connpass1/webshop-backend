@@ -1,6 +1,7 @@
 package com.wsh.settings;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+@Slf4j
 @EnableWebSecurity(debug = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
@@ -33,27 +34,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       //      .ignoring()
       //      .antMatchers("/*/**");
     }
-    
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        log.debug("configure(HttpSecurity http)");
         http.authorizeRequests()
-                .antMatchers("/user/**","/*/remove/**" ).hasAnyRole("USER", "ADMIN")
-                .antMatchers("/test" ).hasAnyRole("USER", "ADMIN")
-                .antMatchers("/user/list","/item/list","/cat/list" ).hasAnyRole("USER", "ADMIN")
-                 
+//
+                .antMatchers("/**").permitAll() // перекоючатель?/////
+                ////////////////////////////////
+                .antMatchers("/user/**", "/*/remove/**").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/test").hasAnyRole("USER", "ADMIN")
+                .antMatchers("/*/list/**").hasAnyRole("ADMIN")
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/**").permitAll().and().logout()
-                .and().csrf().disable()
-                .authorizeRequests().anyRequest().authenticated()
-                .and().httpBasic()
-                .and().sessionManagement().disable();
-                 
-               // .and().exceptionHandling().accessDeniedPage("/403"); //work
-                 
-                
-                
-               // .and().formLogin();
+                .antMatchers("/**").permitAll().and()
+                .formLogin();
+        // .csrf().disable().authorizeRequests().anyRequest().authenticated()
+        //   .and().httpBasic() .and().formLogin();
+        // .and().sessionManagement().disable();
+        // .and().exceptionHandling().accessDeniedPage("/403"); //work
 //todoZ
     }
 

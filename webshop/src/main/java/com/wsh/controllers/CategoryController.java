@@ -1,85 +1,62 @@
 package com.wsh.controllers;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
- 
 import com.wsh.model.Category;
 import com.wsh.model.Item;
-import com.wsh.repo.RepositoryCategory;
-import com.wsh.repo.RepositoryItem;
-
+import com.wsh.model.ItemDetail;
+import com.wsh.repo.CategoryRepository;
+import com.wsh.repo.ItemRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.transaction.Transactional;
+import java.util.List;
 @Slf4j
 @RequestMapping("catalog")
-@RestController 
- 
+@RestController
 public class CategoryController {
-
-
-	
 	@Autowired
-	private RepositoryCategory repo;
+	private CategoryRepository repo;
 
 	@Autowired
-	private RepositoryItem repoitem;
-
+	private ItemRepository repoitem;
 
 	@Transactional
-	@GetMapping("/add/{id}" )
-		@ResponseBody
-		public    Category   add(@PathVariable String id )   {
+	@GetMapping("/add/{id}")
+	@ResponseBody
+	public Item add(@PathVariable String id) {
+		return repoitem.save(Item.builder().itemDetail(new ItemDetail()).name("root").build());
+	}
 
-		Category root = repo.findByName("root");
-		 log.error("root"+(root==null));
+	@GetMapping("{id}")
+	@ResponseBody
+	public Category id(@PathVariable long id) {
+		if (id == 0) return repo.findFirstByName("root");
+		return repo.findById(id);
+	}
 
-		 Item it= new Item(id,root );
-		it= repoitem.save(it);
-		Category c = repo.save(new Category(id,root).addChild (it));
+	@GetMapping("/list")
+	@ResponseBody
+	public List<Category> list() {
+		return repo.findAll();
+	}
 
-		it. setParent(c);it= repoitem.save(it);
-		  
-			 return repo.save(c); 
-		}
+	@GetMapping("/name/{name}")
+	@ResponseBody
+	public Category name(@PathVariable String name) {
+		return repo.findFirstByName("name");
+	}
 
-	@GetMapping("{id}" )
-		@ResponseBody
-		public    Category   id(@PathVariable long id ) {
-		if(id==0)return repo.findByName("root");
-			return repo.findById(id);
-		}
+	@GetMapping("/remove/{id}")
+	@ResponseBody
+	public String remove(@PathVariable long id) {
+		repo.deleteById(id);
+		return "CategoryController" + id;
+	}
 
-	@GetMapping("/list" )
-		@ResponseBody
-		public    List<Category>   list( ) {
-			return repo.findAll();
-
-		}
-
-	@GetMapping("/name/{id}" )
-		@ResponseBody
-		public    Category   name(@PathVariable String id ) {
-			return repo.findByName(id);
-		}
-	@GetMapping("/remove/{id}" )
-		@ResponseBody
-		public    String   remove(@PathVariable long id ) {
-
-		 repo.deleteById(id);
-			return "CategoryController"+id;
-		}
-	@GetMapping(  "/test" )
-		@ResponseBody
-		public    String   test( ) {
-			return "CategoryController test";
-
-	}	}
+	@GetMapping("/test")
+	@ResponseBody
+	public String test() {
+		return "CategoryController test";
+	}
+}

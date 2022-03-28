@@ -1,50 +1,58 @@
 package com.wsh.settings;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.Transient;
-
+import com.wsh.model.Category;
+import com.wsh.model.Item;
+import com.wsh.model.ItemDetail;
+import com.wsh.model.User;
+import com.wsh.repo.CategoryRepository;
+import com.wsh.repo.ItemDetailRepository;
+import com.wsh.repo.ItemRepository;
+import com.wsh.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.wsh.model.Category;
-import com.wsh.model.Item;
-import com.wsh.model.User;
-import com.wsh.repo.RepositoryCategory;
-import com.wsh.repo.RepositoryItem;
-import com.wsh.repo.RepositoryUser;
+import javax.annotation.PostConstruct;
 
 @Component
 public class InitDB {
 
-	@Autowired
-	private RepositoryCategory repositoryCategory;
-	@Autowired
-	private RepositoryUser userRepository; 
-	@Transient
-	@PostConstruct
-	private void postConstruct() {
-		Category root = repositoryCategory.findByName("root");
-		if (root != null)
-			return;
-		root = new Category("root", null);
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-		for (int i = 0; i < 10; i++) {
-			Category сat1 = new Category("Категория a " + i, root);
-			for (int j = 0; j < 10; j++) {
-				Category с1 = new Category("Категория b " + (i*10+j), сat1);
-				for (int l = 0; l < 10; l++) {  
-				Item it = new Item("Продукт №" + (i*100+j*10+l), с1);
-					it.setAmount(1000);  
-					it.setPrice(i*100-j*10+3*l)  ;
-					it.setDescription("хорошая вещь"); 
-					it.setCaption("Заголовок");
-					it.setProperty("не боится морозов");;
-					} 
-			} 
-		}
-		repositoryCategory.save(root);
-		User user = new User("user", "password");
-		user.setRole("ADMIN");
-		userRepository.save(user);
-	}
+    @Autowired
+    private ItemRepository itemRepository;
+    @Autowired
+    private ItemDetailRepository itemDetailRepository;
+
+    @PostConstruct
+    private void postConstruct() {
+        Category root = categoryRepository.findFirstByName("root");
+        if (root != null) return;
+        root = Category.builder().name("root").build();
+        for (int i = 0; i < 10; i++) {
+            Category сat1 = Category.builder().name("Категория a " + i).parent(root).build().changeParent(root);
+            for (int j = 0; j < 10; j++) {
+                {
+                    long num = (i * 10 + j);
+                    Category с1 = Category.builder().name("Категория b " + num).number(num).parent(сat1).build();
+                    сat1.addChild(с1);
+                }
+            }
+        }
+        categoryRepository.save(root);
+        for (int l = 0; l < 100; l++) {
+            ItemDetail det = ItemDetail.builder().amount(120).caption("ups").description("yyyy").build();
+            itemDetailRepository.save(det);
+            Item it = Item.builder().name("Продукт №" + l)
+                    .price(100 + l)
+                    .itemDetail(det).category(root)
+                    .build();
+            itemRepository.save(it);
+
+        }
+        User user = User.builder().name("user").id(1l).password("ADMIN").name("password").build();
+        userRepository.save(user);
+    }
 }

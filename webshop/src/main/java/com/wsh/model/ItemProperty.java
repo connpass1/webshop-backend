@@ -1,34 +1,23 @@
 package com.wsh.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.wsh.helper.LogListener;
 import lombok.*;
 
 import javax.persistence.*;
 
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 @AllArgsConstructor
-@Entity
 @Builder
-@EntityListeners(LogListener.class)
-public class Item {
+@NoArgsConstructor
+@Entity
+public class ItemProperty {
+
     @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String icon;
     @Column(length = 25)
     private String name;
-    private int price = 0;
-
-    @ManyToOne
-    @JoinColumn(name = "item_detail_id")
-    private ItemDetail itemDetail;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
+    private String property;
 }
