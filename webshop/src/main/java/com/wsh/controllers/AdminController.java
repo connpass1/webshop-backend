@@ -19,8 +19,7 @@ public class AdminController {
 	@Autowired
 	private CategoryRepository repo;
 
-	@Autowired
-	private ItemRepository repoitem;
+	 
 	@Autowired
 	private CategoryRepository repoCategory;
 

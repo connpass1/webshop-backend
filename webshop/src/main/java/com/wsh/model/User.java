@@ -2,37 +2,53 @@ package com.wsh.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Objects;
 
 @NoArgsConstructor
-@Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@Entity
 @Builder
-@Table(name = "userok")
-public class User {
+@Table(name = "users")
+public class User implements Serializable {
 
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "profile_id")
-    private final Profile profile = new Profile();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
-    @Setter(AccessLevel.NONE)
-    private final Set<CartOrder> cartOrder = new LinkedHashSet<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    long id;
+    Long  id;
+
     @Column(length = 20, unique = true)
     private String name;
+
     @Column(length = 25)
     private String password;
+
     @Column(length = 5)
     private String role = "USER";
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ")";
+    }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -9,8 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 @RestController
 public class MainController {
-
-
 	@GetMapping(path = "/")
 	@ResponseBody
 	public ModelAndView main() {
