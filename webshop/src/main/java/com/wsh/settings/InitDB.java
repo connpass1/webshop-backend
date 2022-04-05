@@ -32,27 +32,33 @@ public class InitDB {
         if (root != null) return;
         root = Category.builder().name("root").build();
         for (int i = 0; i < 10; i++) {
-            Category сat1 = Category.builder().name("Категория a " + i).parent(root).build().changeParent(root);
+            Category cat1 = Category.builder().name("Категория a " + i).parent(root).build();
+            root.addChild(cat1);
             for (int j = 0; j < 10; j++) {
-                {
-                    long num = (i * 10 + j);
-                    Category с1 = Category.builder().name("Категория b " + num).number(num).parent(сat1).build();
-                    сat1.addChild(с1);
-                }
+                long num = (i * 10 + j);
+                Category c1 = Category.builder().name("Категория b " + num).icon("star").number(num).parent(cat1).build();
+                cat1.addChild(c1);
             }
         }
+
         categoryRepository.save(root);
         for (int l = 0; l < 100; l++) {
-            ItemDetail det = ItemDetail.builder().amount(120).caption("ups").description("yyyy").build();
-            itemDetailRepository.save(det);
             Item it = Item.builder().name("Продукт №" + l)
                     .price(100 + l)
-                    .itemDetail(det).category(root)
+                     .icon("task")
                     .build();
+
+            ItemDetail det = ItemDetail.builder().amount(120).item(it).caption("ups").description("yyyy").build();
+
+        root.addChild(it);
+
             itemRepository.save(it);
+            itemDetailRepository.save(det);
+
 
         }
-        User user = User.builder().name("user").id(1l).password("ADMIN").name("password").build();
-        userRepository.save(user);
+
+        User user = User.builder().name("user").id(1L).role("ADMIN").password("password") .build();
+        userRepository.save(user);categoryRepository.save(root);
     }
 }

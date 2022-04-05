@@ -1,12 +1,14 @@
 package com.wsh.controllers;
 
 import com.wsh.model.Item;
+import com.wsh.model.ItemDetail;
+import com.wsh.repo.ItemDetailRepository;
 import com.wsh.repo.ItemRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("item")
 @RestController
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class ItemController {
     @Autowired
     private ItemRepository repo;
+    @Autowired
+    private ItemDetailRepository repoDetail;
 
     @GetMapping("/add/{id}")
     @ResponseBody
@@ -23,36 +27,21 @@ public class ItemController {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public Item id(@PathVariable long id) {
-        return repo.findById(id);
+    public ItemDetail id(@PathVariable long id) {
+        return repoDetail.findById(id);
     }
 
+    @GetMapping("/list")
     @ResponseBody
-    @GetMapping("all")
-    public Page<Item> listAll() {
-        return repo.findByIdIsNotNullOrderByCategory_Parent_IdAscPriceAsc(PageRequest.of(1, 20));
+    public Iterable<Item> list( ) {
+        return repo.findAll();
     }
 
+    @GetMapping("/all")
     @ResponseBody
-    @GetMapping("all/{page}")
-    public Page<Item> listAll1(@PathVariable int page) {
-        return repo.findByIdIsNotNullOrderByCategory_Parent_IdAscPriceAsc(PageRequest.of(page, 20));
+    public List<ItemDetail> all( ) {
+        return repoDetail.findAll();
     }
-
-
-    @ResponseBody
-    @GetMapping("list/{category_id}")
-    public Page<Item> listAll1(@PathVariable long category_id) {
-        return repo.findByCategory_IdEqualsOrderByCategory_IdAscPriceAscNameAsc(category_id, PageRequest.of(1, 20));
-    }
-
-
-    @ResponseBody
-    @GetMapping("cat/{category_id}/{page}")
-    public Page<Item> listByCategoryName1(@PathVariable long category_id, @PathVariable int page) {
-        return repo.findByCategory_IdEqualsOrderByCategory_IdAscPriceAscNameAsc(category_id, PageRequest.of(page, 10));
-    }
-
 
     @GetMapping("/remove/{id}")
     @ResponseBody

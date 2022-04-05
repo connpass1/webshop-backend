@@ -20,7 +20,7 @@ class WebShopSecurityTests {
     private MockMvc mockMvc;
     private int status = 200;
 
-    @Test
+   // @Test
     void contextLoadsCatalog() throws Exception {
         for (String path : paths) {
             String p = String.format("/%s/list", path);

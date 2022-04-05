@@ -38,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("configure(HttpSecurity http)");
+
+        http.antMatcher("/**").csrf().disable();
         http.authorizeRequests()
 //
                 .antMatchers("/**").permitAll() // перекоючатель?/////
