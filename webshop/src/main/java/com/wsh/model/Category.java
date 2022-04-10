@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
+@Table(name = "Category")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -17,6 +18,7 @@ import java.util.*;
 @Setter
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@RequiredArgsConstructor
 public class Category implements Serializable {
 	@Setter(AccessLevel.NONE)
 	@Id
