@@ -21,7 +21,7 @@ public class Profile implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
     private Long id;
-
+    @Column( unique = true, nullable = false)
     private Long phone;
 
     private Long address;
@@ -32,8 +32,6 @@ public class Profile implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
-
-
 
     @Override
     public String toString() {

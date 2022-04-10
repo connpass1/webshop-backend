@@ -5,29 +5,55 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Slf4j
 class EnityTests {
-    String paths[] = {"catalog", "item", "user", "photo", "cart", "photo", "profile", "property"};
+    String paths[] = {"/","/catalog/list","/item/list" };
+    String paths1[] = { "/user/list","/order/list" };
     @Autowired
     private MockMvc mockMvc;
     private int status = 200;
 
-   // @Test
+   @Test
     void contextLoadsCatalog() throws Exception {
         for (String path : paths) {
-            String p = String.format("/%s/list", path);
-            mockMvc.perform(get(p)).andDo(print()).andExpect(status().is(status));
-            log.debug(p);
+            mockMvc.perform(get(path)).andDo(print()).andExpect(status().is(200));
+            log.debug(path);
+        }
+    }
+    @Test
+    void contextLoadsCatalog1() throws Exception {
+        for (String path : paths1) {
+            mockMvc.perform(get(path)).andDo(print()).andExpect(status().is(401));
+            log.debug(path);
+        }
+    }
+    @Test
+    void contextLoadsCatalog3() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"name\": \"username\",\"password\": \"password\" }")).andReturn();
+        String headerValue = mvcResult.getResponse().getHeader("authorization");
+       log.debug(headerValue);
+      // assert (headerValue !=null);
+        for (String path : paths1) {
+            mockMvc.perform(get(path).header("authorization", headerValue)).andDo(print()).andExpect(status().is(200));
         }
 
-
     }
+
+
 }

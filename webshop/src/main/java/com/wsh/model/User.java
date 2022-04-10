@@ -17,7 +17,6 @@ import java.util.Objects;
 @Builder
 @Table(name = "users")
 public class User implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
@@ -37,7 +36,6 @@ public class User implements Serializable {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ")";
     }
-
 
     @Override
     public boolean equals(Object o) {

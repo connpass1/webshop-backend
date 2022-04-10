@@ -23,8 +23,17 @@ public class InitDB {
     @Autowired
     private ItemDetailRepository itemDetailRepository;
 
-    @PostConstruct
+   // @PostConstruct
     private void postConstruct() {
+        initUser();
+    }
+
+    private void initUser(){
+        User user = User.builder().name("user").id(1L).role("ADMIN").password("password") .build();
+        user = userRepository.save(user);
+
+    }
+    private void initCaloge(){
         Category root = categoryRepository.findFirstByName("root");
         if (root != null) return;
         root = Category.builder().name("root").build();
@@ -42,12 +51,12 @@ public class InitDB {
         for (int l = 0; l < 100; l++) {
             Item it = Item.builder().name("Продукт №" + l)
                     .price(100 + l)
-                     .icon("task")
+                    .icon("task")
                     .build();
 
             ItemDetail det = ItemDetail.builder().amount(120).item(it).caption("ups").description("yyyy").build();
 
-        root.addChild(it);
+            root.addChild(it);
 
             itemRepository.save(it);
             itemDetailRepository.save(det);
@@ -55,19 +64,7 @@ public class InitDB {
 
         }
 
-        User user = User.builder().name("user").id(1L).role("ADMIN").password("password") .build();
-        user = userRepository.save(user);
         categoryRepository.save(root);
 
-
-//        Map<Item, Integer> map =new HashMap<>();
-//        Iterable<Item> all = itemRepository.findAll();
-//        for(Item it :all)  map.put(it,23);
-//
-//        Order o=Order.builder().items(map).build();
-//       //o.setUser(userRepository.findAll().get(0));
-//        repoOrder.save(o);
-
-      ;
     }
 }

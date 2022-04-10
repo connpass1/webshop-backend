@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
+@Table(name = "Category")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

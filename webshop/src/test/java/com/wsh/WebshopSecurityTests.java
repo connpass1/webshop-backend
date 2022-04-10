@@ -27,6 +27,5 @@ class WebShopSecurityTests {
             mockMvc.perform(get(p)).andDo(print()).andExpect(status().is(status));
             log.debug(p);
         }
-
     }
 }
