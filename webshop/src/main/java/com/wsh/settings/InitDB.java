@@ -1,17 +1,15 @@
 package com.wsh.settings;
-
 import com.wsh.model.*;
 import com.wsh.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class InitDB {
-
+    @Autowired
+    private ArticleRepository articleRepository;
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -22,18 +20,29 @@ public class InitDB {
     private ItemRepository itemRepository;
     @Autowired
     private ItemDetailRepository itemDetailRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-   // @PostConstruct
+    @PostConstruct
     private void postConstruct() {
+        initArticle();
         initUser();
+        initCaloge();
     }
 
-    private void initUser(){
-        User user = User.builder().name("user").id(1L).role("ADMIN").password("password") .build();
+    private void initArticle() {
+        Article article = Article.builder().title("Доставка").content("<div>Контент карго</div>").name("cargo").build();
+        articleRepository.save(article);
+    }
+
+
+    private void initUser() {
+        User user = User.builder().name("user").id(1L).role("ADMIN").password(passwordEncoder.encode("password")).build();
         user = userRepository.save(user);
 
     }
-    private void initCaloge(){
+
+    private void initCaloge() {
         Category root = categoryRepository.findFirstByName("root");
         if (root != null) return;
         root = Category.builder().name("root").build();

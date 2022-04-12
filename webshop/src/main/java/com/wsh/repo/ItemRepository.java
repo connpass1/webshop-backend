@@ -1,16 +1,12 @@
 package com.wsh.repo;
-
 import com.wsh.model.Item;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
-
+import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Set;
-
-public interface ItemRepository extends CrudRepository<Item, Long>, JpaSpecificationExecutor<Item> {
+@Repository
+public interface ItemRepository extends JpaRepository<Item, Long> {
     void deleteById(long id);
 
     Item findById(long id);
@@ -20,7 +16,5 @@ public interface ItemRepository extends CrudRepository<Item, Long>, JpaSpecifica
     Item save(Item item);
 
     List<Item> findByIdIn(@NonNull Set<Long> ids);
-
-
 
 }

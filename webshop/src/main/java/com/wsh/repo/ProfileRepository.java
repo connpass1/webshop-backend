@@ -1,15 +1,14 @@
 package com.wsh.repo;
-
 import com.wsh.model.Profile;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.lang.NonNull;
-
+import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProfileRepository extends CrudRepository<Profile, Long>, JpaSpecificationExecutor<Profile> {
+@Repository
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
 
     void deleteById(long id);

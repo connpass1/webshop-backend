@@ -1,10 +1,12 @@
 package com.wsh.settings.config;
 
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
@@ -13,10 +15,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-/**
- * This class is for customize the every request JWT Authorization filter.
- */
+@Slf4j
 @Component
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -48,6 +50,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String user = null;
+        String role = "USER";
         try {
             // check the token is valid
             user = Jwts.parser()
@@ -55,6 +58,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .parseClaimsJws(token.replace(tokenPrefix, ""))
                     .getBody()
                     .getSubject();
+            role = Jwts.parser()
+                    .setSigningKey(secret.getBytes())
+                    .parseClaimsJws(token.replace(tokenPrefix, ""))
+                    .getBody().get("role").toString();
+
         } catch (io.jsonwebtoken.SignatureException ex) {
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is not valid.");
         } catch (io.jsonwebtoken.ExpiredJwtException ex) {
@@ -62,10 +70,12 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         if (user != null) {
+            Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+            authorities.add(new SimpleGrantedAuthority(role));
             UsernamePasswordAuthenticationToken authentication
                     = new UsernamePasswordAuthenticationToken(user,
                     "",
-                    null);
+                    authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(req, res);
         } else {

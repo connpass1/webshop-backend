@@ -13,8 +13,10 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 /**
  * This class is for customize the Spring Security chain and filters.
  */
-@Configuration @Slf4j
+@Configuration
+@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
 
     private final JWTAuthenticationFilter authenticationFilter;
     private final JWTAuthorizationFilter authorizationFilter;
@@ -36,16 +38,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 ///////////////////////////
 
-                .antMatchers("/", "/catalog/**","/item/**","logout/").permitAll()
-       //      .antMatchers("/**" ).permitAll()
-                .antMatchers("/error/**" ).permitAll()
+                .antMatchers("/", "/catalog/**", "/item/**", "/test/**,/page/**", "/error/**").permitAll()
+                .antMatchers("/**").permitAll()
 
+                .antMatchers("/register", "/enter", "/login").permitAll()
+
+                .antMatchers().permitAll()
                 //////////////////////////////////////////
-
-
                 .and().csrf().disable().authorizeRequests()
                 .anyRequest().authenticated()
-
 
 
                 .and()

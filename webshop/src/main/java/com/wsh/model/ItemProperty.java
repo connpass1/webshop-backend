@@ -1,9 +1,8 @@
 package com.wsh.model;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -15,6 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Builder
+@EntityListeners(LogListener.class)
 public class ItemProperty implements Serializable {
 
     @Setter(AccessLevel.NONE)
@@ -40,7 +40,8 @@ public class ItemProperty implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ")";
+        return "ItemProperty{" +
+                "id=" + id +
+                '}';
     }
 }

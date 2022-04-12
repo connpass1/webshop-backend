@@ -1,29 +1,27 @@
 package com.wsh.settings.config;
-import org.springframework.beans.factory.annotation.Value;
+
+import com.wsh.repo.UserRepository;
+import com.wsh.settings.config.dto.CustomUser;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.userdetails.User;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class is to provide the custom auth, with simple hardcoded auth account.
- */
 @Component
+@Slf4j
 public class CustomAuthProvider implements AuthenticationManager {
-
-    @Value("${apps.user.name}")
-    private String userName;
-
-    @Value("${apps.user.password}")
-    private String userPassword;
+    @Autowired
+    private UserRepository repo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -34,15 +32,28 @@ public class CustomAuthProvider implements AuthenticationManager {
 
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
+        com.wsh.model.User userDb = repo.findByNameEquals(username);
 
-        if (username.equals(userName) && password.equals(userPassword)) {
-            UserDetails user = new User(username, "", true, true,
-                    true, true, new ArrayList<>());
-            List<GrantedAuthority> granAuth = new ArrayList<>();
-            granAuth.add(new SimpleGrantedAuthority("ROLE_USER"));
-            return new UsernamePasswordAuthenticationToken(user, "", granAuth);
-        }else {
+        if (userDb == null) {
+            log.debug("no user");
             throw new BadCredentialsException("Bad credentials.");
         }
+        log.debug(userDb.getName());
+
+
+        List<GrantedAuthority> granAuth = new ArrayList<>();
+
+        if (username.equals(userDb.getName()) && userDb.validate(password, passwordEncoder)) {
+
+            CustomUser user = CustomUser.builder().name(userDb.getName()).id(userDb.getId())
+                    .role(userDb.getRole()).build();
+
+            UsernamePasswordAuthenticationToken dd = new UsernamePasswordAuthenticationToken(user, "", granAuth);
+
+            return new UsernamePasswordAuthenticationToken(user, "", granAuth);
+        }
+        throw new BadCredentialsException("Bad credentials.");
+
+
     }
 }

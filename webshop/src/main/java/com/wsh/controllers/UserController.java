@@ -1,15 +1,19 @@
 package com.wsh.controllers;
 
+import com.wsh.model.Order;
 import com.wsh.model.Profile;
 import com.wsh.model.User;
+import com.wsh.repo.OrderRepository;
 import com.wsh.repo.ProfileRepository;
 import com.wsh.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,30 +25,77 @@ public class UserController {
 
     @Autowired
     private ProfileRepository repoProfile;
+
+    @Autowired
+    private OrderRepository repoOrder;
     @Autowired
     private UserRepository repo;
 
-    @GetMapping("/add/{name}/{password}")
+    //    @GetMapping("/test")
+//    @ResponseBody
+//    public String test( Principal principal) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//       log.debug( " @GetMapping(\"/test\")  auth.getAuthorities().toString())  "+auth.getAuthorities().toString());
+//
+//
+//        return   principal.getName()  ;
+//    }
+    @GetMapping("")
     @ResponseBody
-    public User add(@PathVariable String name, @PathVariable String password) {
-        return repo.save(User.builder().name(name).password(password).build());
+    public User idb(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+        return repo.findById(id).get();
     }
 
-    @GetMapping("/profile/{id}")
+    @GetMapping("/enter")
     @ResponseBody
-    public ResponseEntity idProfile(@PathVariable long id) {
+    public ResponseEntity enter(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+
+        return new ResponseEntity(repo.findById(id).get(), HttpStatus.OK);
+    }
+
+    @GetMapping("/profile")
+    @ResponseBody
+    public ResponseEntity idProfile(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
         Optional<Profile> p = repoProfile.findByUser_IdEquals(id);
-        if(p.isPresent())new ResponseEntity (p.get(), HttpStatus.OK);
-       User user= repo.findById(id);
-       if(user ==null)return new ResponseEntity (null, HttpStatus.UNAUTHORIZED);
-        return new ResponseEntity (Profile.builder().user(user).build(), HttpStatus.OK);
+        if (p.isPresent()) return new ResponseEntity(p.get(), HttpStatus.OK);
+        User user = repo.findById(id).get();
+        if (user == null) return new ResponseEntity(null, HttpStatus.UNAUTHORIZED);
+        repoProfile.findByUser_IdEquals(id);
+
+        return new ResponseEntity((Profile.builder().email("test").phone(0l).user(user).build()), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @PostMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public User id(@PathVariable long id) {
-        return repo.findById(id);
+    public ResponseEntity makeProfile(Principal principal, @RequestBody Profile profile) {
+        Long id = Long.parseLong(principal.getName());
+        User user = repo.findById(id).get();
+        Optional<Profile> p = repoProfile.findByUser_IdEquals(id);
+        if (p.isPresent()) {
+            Profile pr = p.get();
+            pr.setAddress(profile.getAddress());
+            pr.setEmail(profile.getEmail());
+            pr.setPhone(profile.getPhone());
+            return new ResponseEntity(repoProfile.save(pr), HttpStatus.OK);
+        }
+
+        if (user == null) return new ResponseEntity(null, HttpStatus.UNAUTHORIZED);
+        profile.setUser(user);
+        return new ResponseEntity(repoProfile.save(profile), HttpStatus.OK);
     }
+
+
+    @GetMapping("order")
+    @ResponseBody
+    public List<Order> listById(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+        log.debug("  @GetMapping(\"order\")" + id);
+        return repoOrder.findByUser_IdEquals(id);
+    }
+
 
     @GetMapping("/list")
     @ResponseBody
@@ -59,33 +110,10 @@ public class UserController {
 //    }
 
 
-
     @GetMapping("/name/{name}")
     @ResponseBody
-    public  User  name(@PathVariable String name) {
-        return repo.findByNameEquals(  name);
+    public User name(@PathVariable String name) {
+        return repo.findByNameEquals(name);
     }
 
-    @PostMapping(
-            value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity findByNameAndPassword(@RequestBody User user) {
-        user=  repo.findByNameEqualsAndPasswordEquals(user.getName(), user.getPassword())  ;
-
-        return new ResponseEntity (user ,user== null?HttpStatus.UNAUTHORIZED: HttpStatus.OK);
-    }
-    @PostMapping(
-            value = "/reg", consumes = "application/json", produces = "application/json")
-    public ResponseEntity< User> reg(@RequestBody User user) {
-
-       if( repo.existsByNameEquals(user.getName()))
-           return new ResponseEntity (user, HttpStatus.LOCKED);
-       user= repo.save(user);
-        return new ResponseEntity (user , HttpStatus.OK);
-    }
-    @GetMapping("/remove/{id}")
-    @ResponseBody
-    public String remove(@PathVariable long id) {
-        repo.deleteById(id);
-        return "user deleted" + id;
-    }
 }

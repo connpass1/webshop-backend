@@ -1,15 +1,14 @@
 package com.wsh.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @NoArgsConstructor
-
+@EntityListeners(LogListener.class)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,10 +20,10 @@ public class Profile implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
     private Long id;
-    @Column( unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private Long phone;
 
-    private Long address;
+    private String address;
 
     @Column(length = 50, unique = true)
     private String email;
@@ -35,8 +34,9 @@ public class Profile implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ")";
+        return "Profile{" +
+                "id=" + id +
+                '}';
     }
 
     @Override

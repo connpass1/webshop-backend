@@ -1,7 +1,6 @@
 package com.wsh.helper;
 
 
-import com.wsh.model.Item;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.PostPersist;
@@ -13,8 +12,8 @@ public class LogListener {
 
     @PostPersist
     @PostUpdate
-    private void postUpdate(Item item) {
-        log.info("item " + item.getName() + "  was updated");
+    private void postUpdate(Object object) {
+        log.debug(object.toString() + "  was updated  ");
     }
 
 

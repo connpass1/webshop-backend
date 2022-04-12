@@ -1,12 +1,10 @@
 package com.wsh.model;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -31,29 +29,28 @@ public class Item implements Serializable {
     private int price = 0;
 
 
-    @Getter  (AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @OneToOne(mappedBy = "item", orphanRemoval = true)
     private ItemDetail itemDetail;
 
 
     @JsonManagedReference
     @ManyToOne
-    @JoinColumn(name = "parent_id",nullable = false)
+    @JoinColumn(name = "parent_id", nullable = false)
     private Category parent;
 
     @JsonProperty("itemDetailId")
     public Long getItemDetailId() {
-        if (itemDetail == null)return null;
-        return itemDetail.getId() ;
+        if (itemDetail == null) return null;
+        return itemDetail.getId();
     }
 
     @JsonProperty("parent")
     public String parent() {
         if (parent.getName().contains("root")) return null;
-        if ( parent.parent() == null) return  parent.getName()+'@'+parent.getId()+'@'+parent.getIcon();
-        return parent.parent()+"$"+ parent.getName()+'@'+parent.getId()+'@'+parent.getIcon();
+        if (parent.parent() == null) return parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
+        return parent.parent() + "$" + parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
     }
-
 
 
     @Override
@@ -71,9 +68,8 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "{\"id\" : " + id + ", " +
-                "\"name\" : \"" + name + "\" , " +
-                "\"detailId\": " + getItemDetailId()+", " +
-                "\"price\" : " + price + " }";
+        return "Item{" +
+                "id=" + id +
+                '}';
     }
 }

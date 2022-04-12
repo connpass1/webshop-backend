@@ -2,6 +2,7 @@ package com.wsh.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 @Entity
 @Builder
 @Table(name = "orders")
+@EntityListeners(LogListener.class)
 public class Order implements Serializable {
     @Setter(AccessLevel.NONE)
     @Id
@@ -32,34 +34,39 @@ public class Order implements Serializable {
     private int status = 0;
 
 
-
     @Getter(AccessLevel.NONE)
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", orphanRemoval = true ,fetch =FetchType.EAGER )
+    @OneToMany(mappedBy = "order", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @JsonProperty("userId")
     public Long getUserId() {
-        if(user==null)return null;
+        if (user == null) return null;
         return user.id;
     }
+
     @PrePersist
-    private  void persistDate(){
+    private void persistDate() {
         initDate = System.currentTimeMillis();
         lastUpdateStatus = System.currentTimeMillis();
     }
+
     @PreUpdate
-    private  void updateDate(){
+    private void updateDate() {
         lastUpdateStatus = System.currentTimeMillis();
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ")";
+        return "Order{" +
+                "id=" + id +
+                ", status=" + status +
+                ", user=" + user +
+                ", orderItems=" + orderItems +
+                '}';
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.wsh.settings.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-
-import com.wsh.model.User;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.wsh.settings.config.dto.CustomUser;
+import com.wsh.settings.config.dto.Customer;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+
 @Configuration
 @Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -39,12 +40,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Value("${apps.security.header-string}")
     private String headerString;
 
-    @Value("${apps.user.name}")
-    private String name;
-
-    @Value("${apps.user.password}")
-    private String password;
-
     @Autowired
     @Override
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
@@ -55,14 +50,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) {
         try {
-             User creds = new ObjectMapper()
-                    .readValue(request.getInputStream(),  User.class);
-            UsernamePasswordAuthenticationToken authc = new UsernamePasswordAuthenticationToken(
-                    creds.getName(),
-                    creds.getPassword(),
+            Customer cred = new ObjectMapper()
+                    .readValue(request.getInputStream(), Customer.class);
 
-                    new ArrayList<>());log.debug(creds.getName());
-            return authProvider.authenticate(authc);
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    cred.getName(),
+                    cred.getPassword(),
+                    new ArrayList<>());
+            return authProvider.authenticate(auth);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -73,16 +68,24 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+
+        log.debug(customUser.toString());
         Date d = new Date();
         String token = Jwts.builder()
                 .setId(DigestUtils.md5Hex(secret)) // create random md5 as ID
-                .setSubject((( org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
+                .setSubject("" + customUser.getId())
                 .setIssuedAt(d)
-                .setExpiration(new Date(d.getTime() + 1_314_000_000L)) // 365 years
-                .claim("authorities", auth.getAuthorities()) // add authority details to user, but will increase the payload size
+                .setExpiration(new Date(d.getTime() + 365 * 24 * 60 * 60 * 1000L)) // one year
+                .claim("role", customUser.getRole()) // add authority details to user, but will increase the payload size
                 .signWith(SignatureAlgorithm.HS512, secret.getBytes())
                 .compact();
-        response.addHeader(headerString, tokenPrefix + token);
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT); // set custom status 204, instead of 200
+        // response.addHeader(headerString, tokenPrefix + token);
+        customUser.setToken(token);
+
+        ObjectWriter ow = new ObjectMapper().writer();
+        String json = ow.writeValueAsString(customUser);
+        response.getWriter().write(json);
+        response.setStatus(200); // set custom status 204, instead of 200
     }
 }

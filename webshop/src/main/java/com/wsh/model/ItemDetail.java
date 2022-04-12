@@ -1,9 +1,8 @@
 package com.wsh.model;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -17,6 +16,7 @@ import java.util.Set;
 @Setter
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@EntityListeners(LogListener.class)
 public class ItemDetail implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,7 +25,6 @@ public class ItemDetail implements Serializable {
     @Column(length = 50)
     private String caption;
     private String description;
-
 
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -44,8 +43,9 @@ public class ItemDetail implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" +
-                "id = " + id + ")";
+        return "ItemDetail{" +
+                "id=" + id +
+                '}';
     }
 
     @Override

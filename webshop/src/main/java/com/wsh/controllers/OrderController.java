@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 
 @RequestMapping("order")
@@ -35,47 +36,48 @@ public class OrderController {
     @GetMapping("/list")
     @ResponseBody
     public List<Order> list() {
-        return  repo.findAll() ;
+        return repo.findAll();
 
     }
+
     @GetMapping("/list/item")
     @ResponseBody
     public List<OrderItem> listItem() {
-        return  orderItemRepo.findAll() ;
+        return orderItemRepo.findAll();
 
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("")
     @ResponseBody
-    public List<Order> listById(@PathVariable long id) {
-        log.debug("listById");
-        return  repo.findByUser_IdEquals(id) ;
+    public List<Order> listById(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+        return repo.findByUser_IdEquals(id);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("")
     @ResponseBody
-    public ResponseEntity makeOrder(@PathVariable long id, @RequestBody OrderHelper[] array) {
-
-        log.debug(""+array.length);
+    public ResponseEntity makeOrder(Principal principal, @RequestBody OrderHelper[] array) {
+        Long id = Long.parseLong(principal.getName());
+        log.debug("" + array.length);
         Set idSet = new LinkedHashSet();
         for (OrderHelper l : array) {
             idSet.add(l.getId());
         }
         Map<Item, Integer> map = new HashMap();
 
-    List<Item> list = repoItem.findByIdIn(idSet);
+        List<Item> list = repoItem.findByIdIn(idSet);
 
-        List <OrderItem > list1=new LinkedList  <>();
-        User user = repoUser.findById(id);
+        List<OrderItem> list1 = new LinkedList<>();
+        User user = repoUser.findById(id).get();
         Order order = repo.save(Order.builder().status(0).user(user).orderItems(list1).build());
-    for (Item i : list) {
-        list1.add(OrderItem.builder().order(order).item(i).quantity(5).build());
-    }
+        for (Item i : list) {
+            list1.add(OrderItem.builder().order(order).item(i).quantity(5).build());
+        }
 
         orderItemRepo.saveAll(list1);
 
 
-        return  new ResponseEntity (  order ,HttpStatus.OK);
+        return new ResponseEntity(order, HttpStatus.OK);
     }
 
 
