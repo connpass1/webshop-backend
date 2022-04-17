@@ -2,11 +2,10 @@ package com.wsh.model;
 
 
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Nav;
 import lombok.*;
-
 import javax.persistence.*;
 import java.io.Serializable;
-
 
 @NoArgsConstructor
 @Getter
@@ -24,16 +23,18 @@ public class Article implements Serializable {
     private String name;
     @Column(length = 10)
     private String icon;
-    private Integer menu;
     private Integer position;
     @Column(length = 50, unique = true, nullable = false)
     private String title;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Enumerated
+    @Column(name = "nav", nullable = false)
+    private Nav nav=Nav.OTHER;
+
     @PrePersist
     public void prePersist() {
-        if (menu == null) menu = 0;
         if (position == null) position = 0;
     }
 

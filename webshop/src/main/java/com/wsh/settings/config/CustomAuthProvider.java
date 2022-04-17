@@ -25,11 +25,9 @@ public class CustomAuthProvider implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
         if (authentication.getName() == null || authentication.getCredentials() == null) {
             throw new BadCredentialsException("Credentials can not null.");
         }
-
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
         com.wsh.model.User userDb = repo.findByNameEquals(username);
@@ -46,7 +44,7 @@ public class CustomAuthProvider implements AuthenticationManager {
         if (username.equals(userDb.getName()) && userDb.validate(password, passwordEncoder)) {
 
             CustomUser user = CustomUser.builder().name(userDb.getName()).id(userDb.getId())
-                    .role(userDb.getRole()).build();
+                    .role(userDb.getRole().name()).build();
 
             UsernamePasswordAuthenticationToken dd = new UsernamePasswordAuthenticationToken(user, "", granAuth);
 

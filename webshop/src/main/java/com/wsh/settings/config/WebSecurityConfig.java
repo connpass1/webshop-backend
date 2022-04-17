@@ -31,12 +31,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        log.debug(" configure(HttpSecurity http)");
 
         http.cors()
 
                 .and().authorizeRequests()
-                ///////////////////////////
+
 
                 .antMatchers("/", "/catalog/**", "/item/**", "/test/**,/page/**", "/error/**").permitAll()
                 .antMatchers("/**").permitAll()
@@ -44,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register", "/enter", "/login").permitAll()
 
                 .antMatchers().permitAll()
-                //////////////////////////////////////////
+
                 .and().csrf().disable().authorizeRequests()
                 .anyRequest().authenticated()
 

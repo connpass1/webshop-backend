@@ -9,15 +9,15 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-
-@NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Table(name = "Item")
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Getter
 @Setter
-@AllArgsConstructor
 @Entity
 @Builder
 @EntityListeners(LogListener.class)
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Item implements Serializable {
     @Setter(AccessLevel.NONE)
     @Id
@@ -28,11 +28,9 @@ public class Item implements Serializable {
     private String name;
     private int price = 0;
 
-
     @Getter(AccessLevel.NONE)
     @OneToOne(mappedBy = "item", orphanRemoval = true)
     private ItemDetail itemDetail;
-
 
     @JsonManagedReference
     @ManyToOne
@@ -51,7 +49,6 @@ public class Item implements Serializable {
         if (parent.parent() == null) return parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
         return parent.parent() + "$" + parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
     }
-
 
     @Override
     public boolean equals(Object o) {

@@ -2,7 +2,9 @@ package com.wsh.model;
 
 import com.wsh.helper.LogListener;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -24,13 +26,22 @@ public class Profile implements Serializable {
     private Long phone;
 
     private String address;
-
     @Column(length = 50, unique = true)
     private String email;
 
+   @JsonIgnore
+   @Getter(AccessLevel.NONE)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", unique = true)
-    private User user;
+    private User user; 
+   @Transient
+    public Long getUserId( ){
+          return user.getId();
+      }
+    @Transient
+    public String getName( ){
+        return user.getName();
+    }
 
     @Override
     public String toString() {

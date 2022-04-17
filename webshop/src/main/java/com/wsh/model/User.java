@@ -2,6 +2,7 @@ package com.wsh.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class User implements Serializable {
     @Setter(AccessLevel.NONE)
     Long id;
 
-    @Column(length = 20, unique = true)
+    @Column(length = 25,  unique = true,nullable = false)
     private String name;
 
     @JsonIgnore
@@ -33,8 +34,11 @@ public class User implements Serializable {
     private String password;
 
 
-    @Column(length = 5)
-    private String role = "USER";
+
+
+    @Enumerated(EnumType.STRING)
+    @Column( nullable = false)
+    private Role role =Role.USER;
 
     @Override
     public String toString() {
@@ -59,5 +63,10 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @PrePersist
+    public void prePersist() {
+
     }
 }

@@ -18,12 +18,12 @@ public class ItemController {
     private ItemRepository repo;
     @Autowired
     private ItemDetailRepository repoDetail;
-
-    @GetMapping("/add/{id}")
-    @ResponseBody
-    public String add(@PathVariable String id) {
-        return "ItemController" + id;
-    }
+//
+//    @GetMapping("/add/{id}")
+//    @ResponseBody
+//    public String add(@PathVariable String id) {
+//        return "ItemController" + id;
+//    }
 
     @GetMapping("/{id}")
     @ResponseBody

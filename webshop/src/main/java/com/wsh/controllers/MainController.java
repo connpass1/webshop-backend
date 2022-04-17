@@ -1,5 +1,6 @@
 package com.wsh.controllers;
 
+import com.wsh.helper.UserPass;
 import com.wsh.model.User;
 import com.wsh.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +33,17 @@ public class MainController {
 
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity add(@RequestBody User user) {
-        if (repoUser.existsByNameEquals(user.getName()))
+    public ResponseEntity add(@RequestBody UserPass userPass) {
+        log.debug(userPass.getName());
+        log.debug(userPass.getPassword());
+
+        boolean isUserInDB = repoUser.existsByNameEquals(userPass.getName(  ));
+        log.debug(";;"+isUserInDB );
+        if (isUserInDB )
             return new ResponseEntity("uncorrected password ", HttpStatus.IM_USED);
-        //User dbUser=new User()
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+         User user=new User();
+         user.setName(userPass.getName());
+        user.setPassword(passwordEncoder.encode(userPass.getPassword()));
         return new ResponseEntity(repoUser.save(user), HttpStatus.OK);
     }
 

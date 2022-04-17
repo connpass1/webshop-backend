@@ -8,7 +8,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,13 +1,16 @@
 package com.wsh.controllers;
 
 import com.wsh.model.Article;
-import com.wsh.model.ArticleIFace;
+import com.wsh.model.ifaces.Slug;
 import com.wsh.repo.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequestMapping("page")
@@ -24,7 +27,7 @@ public class ArticleController {
 
     @GetMapping("/list")
     @ResponseBody
-    public List<ArticleIFace> list() {
+    public List<Slug> list() {
         return repo.findShortList();
     }
 
@@ -34,16 +37,12 @@ public class ArticleController {
         return repo.findAll();
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     @ResponseBody
-    public Article id(@PathVariable Long id) {
-        return repo.findById(id).get();
-    }
-
-    @GetMapping("/{name}")
-    @ResponseBody
-    public Article stringId(@PathVariable String name) {
-        return repo.findByNameEqualsIgnoreCase(name);
+    public ResponseEntity id(@PathVariable Long id) {
+        Optional<Article> a = repo.findById(id) ;
+        if (a.isEmpty())return  new ResponseEntity(null, HttpStatus.NOT_FOUND);
+      return  new ResponseEntity(a, HttpStatus.OK);
     }
 
 }

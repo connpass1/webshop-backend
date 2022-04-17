@@ -1,7 +1,7 @@
 package com.wsh.repo;
 
 import com.wsh.model.Article;
-import com.wsh.model.ArticleIFace;
+import com.wsh.model.ifaces.Slug;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
@@ -10,14 +10,14 @@ import java.util.List;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-
     Article findById(long id);
+    @Query("select  a.id as id , a.name as name  , a.icon as icon" +
+            " from Article a order by  a.position ")
+    List<Slug> findShortList();
 
-    Article findByNameEqualsIgnoreCase(@NonNull String name);
+     void deleteByIdEquals(@NonNull Long id);
 
-    @Query("select  a.id   AS articleId, a.name AS articleName, a.menu AS articleMenu, a.icon AS articleIcon " +
-            " from Article a order by a.menu, a.position ")
-    List<ArticleIFace> findShortList();
+    boolean existsByIdEquals(@NonNull Long id);
 
 }
 

@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -31,15 +30,6 @@ public class UserController {
     @Autowired
     private UserRepository repo;
 
-    //    @GetMapping("/test")
-//    @ResponseBody
-//    public String test( Principal principal) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//       log.debug( " @GetMapping(\"/test\")  auth.getAuthorities().toString())  "+auth.getAuthorities().toString());
-//
-//
-//        return   principal.getName()  ;
-//    }
     @GetMapping("")
     @ResponseBody
     public User idb(Principal principal) {
@@ -65,12 +55,13 @@ public class UserController {
         if (user == null) return new ResponseEntity(null, HttpStatus.UNAUTHORIZED);
         repoProfile.findByUser_IdEquals(id);
 
-        return new ResponseEntity((Profile.builder().email("test").phone(0l).user(user).build()), HttpStatus.OK);
+        return new ResponseEntity((Profile.builder().email("") .user(user).build()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity makeProfile(Principal principal, @RequestBody Profile profile) {
+     log.debug("profile");
         Long id = Long.parseLong(principal.getName());
         User user = repo.findById(id).get();
         Optional<Profile> p = repoProfile.findByUser_IdEquals(id);

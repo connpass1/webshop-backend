@@ -1,9 +1,11 @@
 package com.wsh.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Slug;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -13,18 +15,19 @@ import java.util.*;
 
 @Table(name = "Category")
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Getter
 @Setter
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EntityListeners(LogListener.class)
+@RequiredArgsConstructor
 public class Category implements Serializable {
     @Setter(AccessLevel.NONE)
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "cat_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "cat_id" )
     private final Set<Category> childrenCategory = new LinkedHashSet();
+
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "parent")
     private final List<Item> items = new LinkedList<>();
@@ -43,13 +46,13 @@ public class Category implements Serializable {
     private String title;
     @Column(length = 25, unique = true)
     private String name;
-    private Long number;
-    private String icon;
 
+    private String icon;
+    private Integer position;
     @JsonProperty("parent")
     public String parent() {
         if (parent == null) return null;
-        if (parent.parent() == null) return "$каталог@0@home";
+        if (parent.parent() == null) return "$каталог@1@home";
         return parent.parent() + "$" + parent.name + '@' + parent.id + '@' + parent.icon;
     }
 
@@ -81,12 +84,11 @@ public class Category implements Serializable {
         child.parent = null;
         return this;
     }
-
-    @PostLoad
-    private void PreUpdate() {
-        if (number == null)
-            number = id;
+    @PrePersist
+    public void prePersist() {
+        if (position == null) position = 0;
     }
+
 
     @Override
     public boolean equals(Object o) {

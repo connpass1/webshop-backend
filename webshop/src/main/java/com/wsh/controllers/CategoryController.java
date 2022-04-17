@@ -18,24 +18,14 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryRepository repo;
-
     @Autowired
-    private ItemRepository repoitem;
+    private ItemRepository itemRepository;
 
-    @Transactional
-    @GetMapping("/add/{id}")
-    @ResponseBody
-    public Item add(@PathVariable String id) {
-        return repoitem.save(Item.builder().itemDetail(new ItemDetail()).name("root").build());
-    }
-
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseBody
     public Category id(@PathVariable long id) {
-        if (id == 0) return repo.findFirstByName("root");
         return repo.findById(id);
     }
-
     @GetMapping("/list")
     @ResponseBody
     public List<Category> list() {
@@ -54,7 +44,6 @@ public class CategoryController {
         repo.deleteById(id);
         return "CategoryController" + id;
     }
-
     @GetMapping("/test")
     @ResponseBody
     public String test() {
