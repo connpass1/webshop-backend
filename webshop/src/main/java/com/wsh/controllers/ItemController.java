@@ -33,13 +33,13 @@ public class ItemController {
 
     @GetMapping("/list")
     @ResponseBody
-    public Iterable<Item> list( ) {
+    public Iterable<Item> list() {
         return repo.findAll();
     }
 
     @GetMapping("/all")
     @ResponseBody
-    public List<ItemDetail> all( ) {
+    public List<ItemDetail> all() {
         return repoDetail.findAll();
     }
 

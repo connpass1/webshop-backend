@@ -12,6 +12,7 @@ import java.util.List;
 public class PropertyController {
     @Autowired
     private ItemPropertyRepository repo;
+
     @GetMapping("list")
     @ResponseBody
     public List<ItemProperty> list() {
