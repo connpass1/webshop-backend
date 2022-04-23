@@ -18,19 +18,14 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryRepository repo;
-    @Autowired
-    private ItemRepository itemRepository;
+
 
     @GetMapping("/{id}")
     @ResponseBody
     public Category id(@PathVariable long id) {
         return repo.findById(id);
     }
-    @GetMapping("/list")
-    @ResponseBody
-    public List<Category> list() {
-        return repo.findAll();
-    }
+
 
     @GetMapping("/name/{name}")
     @ResponseBody
@@ -38,15 +33,4 @@ public class CategoryController {
         return repo.findFirstByName("name");
     }
 
-    @GetMapping("/remove/{id}")
-    @ResponseBody
-    public String remove(@PathVariable long id) {
-        repo.deleteById(id);
-        return "CategoryController" + id;
-    }
-    @GetMapping("/test")
-    @ResponseBody
-    public String test() {
-        return "CategoryController test";
-    }
 }

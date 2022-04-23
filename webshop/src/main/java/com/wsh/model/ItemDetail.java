@@ -1,6 +1,7 @@
 package com.wsh.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Quantity;
 import lombok.*;
 import org.hibernate.Hibernate;
 import javax.persistence.*;
@@ -19,18 +20,14 @@ import java.util.Set;
 @EntityListeners(LogListener.class)
 public class ItemDetail implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private int amount = 0;
     @Column(length = 50)
     private String caption;
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "property_id")
-    private Set<ItemProperty> properties = new java.util.LinkedHashSet<>();
-    private int quantity = 1000;
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "item_id")
     private Item item;
@@ -59,5 +56,12 @@ public class ItemDetail implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+
+    @PrePersist
+
+    public void prePersist() {
+    if (item!=null)id=item.getId();
     }
 }

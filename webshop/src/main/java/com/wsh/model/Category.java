@@ -1,17 +1,16 @@
 package com.wsh.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
-import com.wsh.model.ifaces.Slug;
 import lombok.*;
 import org.hibernate.Hibernate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
+
+import static com.wsh.helper.Comparator.categoryComparator;
 
 @Table(name = "Category")
 @AllArgsConstructor
@@ -24,14 +23,15 @@ import java.util.*;
 @RequiredArgsConstructor
 public class Category implements Serializable {
     @Setter(AccessLevel.NONE)
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "cat_id" )
-    private final Set<Category> childrenCategory = new LinkedHashSet();
+    private final List<Category> childrenCategory = new LinkedList();
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "parent")
     private final List<Item> items = new LinkedList<>();
     @Setter(AccessLevel.NONE)
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -52,13 +52,14 @@ public class Category implements Serializable {
     @JsonProperty("parent")
     public String parent() {
         if (parent == null) return null;
-        if (parent.parent() == null) return "$каталог@1@home";
+        if (parent.parent() == null) return "$Меню@1@home";
         return parent.parent() + "$" + parent.name + '@' + parent.id + '@' + parent.icon;
     }
 
     @Transient
     public Category addChild(Category child) {
         childrenCategory.add(child);
+        Collections.sort(childrenCategory,categoryComparator );
         child.parent = this;
         return this;
     }
@@ -67,7 +68,7 @@ public class Category implements Serializable {
     public Category addChild(Item child) {
         child.setParent(this);
         items.add(child);
-
+        Collections.sort(childrenCategory,categoryComparator );
         return this;
     }
 

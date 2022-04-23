@@ -1,8 +1,8 @@
 package com.wsh.model;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Quantity;
 import lombok.*;
 import org.hibernate.Hibernate;
 import javax.persistence.*;
@@ -37,11 +37,9 @@ public class Item implements Serializable {
     @JoinColumn(name = "parent_id", nullable = false)
     private Category parent;
 
-    @JsonProperty("itemDetailId")
-    public Long getItemDetailId() {
-        if (itemDetail == null) return null;
-        return itemDetail.getId();
-    }
+    @Enumerated
+    @Column(name = "quantity", nullable = false)
+    private Quantity quantity = Quantity.UNLIMITED;
 
     @JsonProperty("parent")
     public String parent() {
@@ -69,4 +67,12 @@ public class Item implements Serializable {
                 "id=" + id +
                 '}';
     }
+    @PostUpdate
+    @PostPersist
+    public void postPersist() {
+        if (itemDetail!= null)
+        itemDetail.setItem(this);
+    }
+
+
 }

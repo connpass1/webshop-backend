@@ -1,6 +1,8 @@
 package com.wsh.repo;
 
 import com.wsh.model.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
@@ -16,7 +18,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     void deleteById(long id);
 
-    List<Category> findAll();
+    Page<Category> findByIdIsNotNullOrderByParent_Parent_IdAsc(Pageable pageable);
+
+    @Query("select c from Category c where c.parent.id is null")
+    Optional<Category> findRoot();
+
+    //List<Category> findAll();
 
     Category findById(long id);
 

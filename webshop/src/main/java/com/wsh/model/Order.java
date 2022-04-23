@@ -34,18 +34,20 @@ public class Order implements Serializable {
     private int status = 0;
 
 
-    @Getter(AccessLevel.NONE)
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private User user;
 
     @OneToMany(mappedBy = "order", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @Getter(AccessLevel.NONE)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
+
     @JsonProperty("userId")
     public Long getUserId() {
-        if (user == null) return null;
-        return user.id;
+        if (profile == null) return null;
+        return profile.getUserId();
     }
 
     @PrePersist
@@ -64,7 +66,7 @@ public class Order implements Serializable {
         return "Order{" +
                 "id=" + id +
                 ", status=" + status +
-                ", user=" + user +
+                ", user=" + getUserId() +
                 ", orderItems=" + orderItems +
                 '}';
     }

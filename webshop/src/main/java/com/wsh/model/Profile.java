@@ -7,6 +7,8 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -19,12 +21,12 @@ import java.util.Objects;
 public class Profile implements Serializable {
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.NONE)
     private Long id;
+
+
     @Column(unique = true, nullable = false)
     private Long phone;
-
     private String address;
     @Column(length = 50, unique = true)
     private String email;
@@ -33,7 +35,22 @@ public class Profile implements Serializable {
    @Getter(AccessLevel.NONE)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id", unique = true)
-    private User user; 
+    private User user;
+
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "profile", orphanRemoval = true)
+    private List<Order> orders=new LinkedList<>();
+
+    public void setUser(User user){
+       this.user=user;
+       this.id=user.getId();
+   }
+    @Transient
+    public Profile setOrder( Order order){
+        if (orders==null) orders=new LinkedList<>();
+        orders.add(order);
+        return this;
+    }
    @Transient
     public Long getUserId( ){
           return user.getId();
