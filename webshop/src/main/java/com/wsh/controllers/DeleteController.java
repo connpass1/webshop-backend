@@ -30,17 +30,16 @@ public class DeleteController {
     private CategoryRepository categoryRepository;
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
+
     @Transactional
     @PostMapping("/page")
     @ResponseBody
     public ResponseEntity delPage (@RequestBody JSONObject ob) {
         log.debug(ob.toJSONString());
         Long id=Long.valueOf((Integer)ob.get("id"));
-        if (!articleContentRepository.existsByIdEquals(id))
+        if (!articleRepository.existsByIdEquals(id))
             return new ResponseEntity("ok", HttpStatus.ACCEPTED);
-        articleContentRepository.deleteById(id);
+        articleRepository.deleteById(id);
         return  new ResponseEntity("статья удалена", HttpStatus.ACCEPTED);
     }
     @Transactional
@@ -52,7 +51,7 @@ public class DeleteController {
         ItemDetail itemDetail = itemDetailRepository.findById(id).get();
         log.debug(itemDetail.toString());
         itemDetailRepository.delete(itemDetail);
-        itemRepository.delete (itemDetail.getItem());
+
         return  new ResponseEntity("товар удален"+id, HttpStatus.ACCEPTED);
     }
     @Transactional
@@ -62,6 +61,7 @@ public class DeleteController {
         log.debug(ob.toJSONString());
         Long id=Long.valueOf((Integer)ob.get("id"));
         Category category = categoryRepository.findById(id).get();
+        if(category.getParent()==null) return  new ResponseEntity("категория  не удалена"+id, HttpStatus.FORBIDDEN);
         categoryRepository.delete( category);
         return  new ResponseEntity("категория удалена"+id, HttpStatus.ACCEPTED);
     }

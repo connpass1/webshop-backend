@@ -11,9 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-    void deleteById(long id);
+
     Profile findById(long id);
-    boolean existsByUser_IdEquals(@NonNull Long id);
+
     Page<Profile> findByUser_IdIsNotNullOrderByUser_NameAsc(Pageable pageable);
     @Query("select p from Profile p where p.user.id = ?1")
     Optional<Profile> findByUser_IdEquals(@NonNull Long id);

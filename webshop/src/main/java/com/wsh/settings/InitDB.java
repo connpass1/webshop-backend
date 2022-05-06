@@ -19,8 +19,7 @@ import java.util.Set;
 public class InitDB {
     @Autowired
     private ArticleRepository articleRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
+
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -41,41 +40,29 @@ public class InitDB {
         initCat();
     }
     private void initArticle() {
-        Article article = Article.builder().nav(Nav.MENU).name("Контакты").icon("contacts").position(2).build();
-        articleRepository.save(article);
-        ArticleContent articleContent=
-                ArticleContent.builder().title("Контакты").content("<div>Контакты</div>").article(article) .id(article.getId()).build();
-        articleContentRepository.save(articleContent);
-        article = Article.builder().nav(Nav.MENU).position(1).name("Доставка").icon("delivery").build();
-        articleRepository.save(article);
-        articleContent=
-                ArticleContent.builder().title("Доставка").content("<div>Доставка</div>").article(article).id(article.getId()).build();
-        articleContentRepository.save(articleContent);
-
-        article = Article.builder().nav(Nav.MENU).position(0).name("Акции").icon("actions").build();
-        articleRepository.save(article);
-        articleContent=
-                ArticleContent.builder().title("Акции").content("<div>Акции</div>").article(article).id(article.getId()).build();
-        articleContentRepository.save(articleContent);
 
 
-        article = Article.builder().nav(Nav.FOOTER).position(0).name("Вакансии").icon("vacancy").build();
-        articleRepository.save(article);
-        articleContent=
-                ArticleContent.builder().title("Вакансии").content("<div>Вакансии</div>").article(article).id(article.getId()).build();
-        articleContentRepository.save(articleContent);
+        Article article=
+                Article.builder().title("Акции").content("<div>Акции</div>").name("Акции").icon("actions").position(1).nav(Nav.MENU).build();
 
-        article = Article.builder().nav(Nav.FOOTER).position(1).name("Новости").icon("news").build();
-        articleRepository.save(article);
-        articleContent=
-                ArticleContent.builder().title("Новости").content("<div>Новости</div>").article(article).id(article.getId()).build();
-        articleContentRepository.save(articleContent);
+        article= articleRepository.save( article);
 
-        article = Article.builder().nav(Nav.FOOTER).position(2).name("Сотрудничество").icon("coop").build();
-        articleRepository.save(article);
-        articleContent=
-                ArticleContent.builder().title("Сотрудничество").content("<div>Сотрудничество</div>").article(article).id(article.getId()).build();
-        articleContentRepository.save(articleContent);
+        article= Article.builder().title("Контакты").content("<div>Контакты</div>").name("контакты").icon("contacts").position(2).nav(Nav.MENU).build();
+
+        articleRepository.save( article);
+        article= Article.builder().title("Доставка").content("<div>Доставка</div>").name("Доставка").icon("cargo").position(3).nav(Nav.MENU).build();
+
+        articleRepository.save( article);
+
+        article = Article.builder().nav(Nav.FOOTER).position(0).name("Вакансии").title("Вакансии").position(2).content("<div>hhh</div>").icon("vacancy").build();
+        articleRepository.save( article);
+
+        article = Article.builder().nav(Nav.FOOTER).position(1).name("Новости").title("Новости").icon("news").position(3).content("<div>hhh</div>").build();
+        articleRepository.save( article);
+
+        article = Article.builder().nav(Nav.FOOTER).position(2).name("Сотрудничество").content("<div>hhh</div>").position(4).title("Сотрудничество").icon("coop").build();
+        articleRepository.save( article);
+
 
 
     }
@@ -84,7 +71,7 @@ public class InitDB {
         user = userRepository.save(user);
     }
     private void initCat() {
-        Category root = categoryRepository.findFirstByName("Меню");
+        Category root = categoryRepository.findRoot() ;
         if (root != null) return;
         root = Category.builder().name("Меню").icon("home").build();
         Category soup =addChild(root,"Первые блюда",0,"soup") ;

@@ -28,8 +28,10 @@ public class Item implements Serializable {
     private String name;
     private int price = 0;
 
+
     @Getter(AccessLevel.NONE)
-    @OneToOne(mappedBy = "item", orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true,fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemDetail_id", nullable = false, unique = true )
     private ItemDetail itemDetail;
 
     @JsonManagedReference

@@ -22,6 +22,7 @@ import static com.wsh.helper.Comparator.categoryComparator;
 @EntityListeners(LogListener.class)
 @RequiredArgsConstructor
 public class Category implements Serializable {
+
     @Setter(AccessLevel.NONE)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
     @JoinColumn(name = "cat_id" )
@@ -49,6 +50,7 @@ public class Category implements Serializable {
 
     private String icon;
     private Integer position;
+
     @JsonProperty("parent")
     public String parent() {
         if (parent == null) return null;
@@ -58,6 +60,10 @@ public class Category implements Serializable {
 
     @Transient
     public Category addChild(Category child) {
+        if(child.parent!=null){
+            child.parent.getChildrenCategory().remove(child);
+
+        }
         childrenCategory.add(child);
         Collections.sort(childrenCategory,categoryComparator );
         child.parent = this;

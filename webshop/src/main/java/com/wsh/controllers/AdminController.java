@@ -34,21 +34,25 @@ public class AdminController {
     private CategoryRepository categoryRepository;
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
+
+
     @GetMapping("/pages/{page}")
     @ResponseBody
 
-    public Page<Article>  pages(@PathVariable int page) {
+    public Page<ArticleInfo>  pages(@PathVariable int page) {
 
         Pageable pageable = PageRequest.of(  (page-1), 20);
         return articleRepository.findByIdIsNotNullOrderByNavAscPositionAsc(pageable);
     }
-    @GetMapping("/item/{id}")
+    @GetMapping("/item/{id}/{cat}")
     @ResponseBody
-    public  ItemDetail  getItem(@PathVariable long id) {
+    public  ItemDetail  getItem(@PathVariable long id,@PathVariable long cat) {
+
+        log.debug("ids"+id+"cat"+cat);
           if(id>0)   return itemDetailRepository.findById(id);
-        return     ItemDetail.builder().build();
+        Category parent = categoryRepository.findById(cat);
+          Item item=Item.builder().parent(parent).quantity(Quantity.UNLIMITED).id(0l).build();
+        return     ItemDetail.builder().item(item).build();
     }
 
     @GetMapping("/page/{id}")
@@ -57,8 +61,8 @@ public class AdminController {
 
         if (id==0){
 
-            return   new ResponseEntity(ArticleContent.builder().build(), HttpStatus.OK);}
-        Optional<ArticleContent> optional = articleContentRepository.findById(id);
+            return   new ResponseEntity(Article.builder().build(), HttpStatus.OK);}
+        Optional<Article> optional = articleRepository.findById(id);
            if(optional .isEmpty())return   new ResponseEntity(null, HttpStatus.NOT_FOUND);
         return   new ResponseEntity(optional.get(), HttpStatus.OK);
     }
@@ -95,7 +99,7 @@ public class AdminController {
     @GetMapping("/catalog/{id}")
     @ResponseBody
     public  Category  catalog(@PathVariable long  id ) {
-        if(id==0)return categoryRepository.findFirstByNameEquals("menu").get();
+        if(id==0)return categoryRepository.findRoot() ;
 
         return categoryRepository.findById(id);
     }
@@ -106,7 +110,6 @@ public class AdminController {
         Pageable pageable = PageRequest.of(   page-1 , 20);;
         return orderRepository.findByIdIsNotNullOrderByStatusAscLastUpdateStatusAsc(pageable);
     }
-
     @GetMapping("/user/{id}")
     @ResponseBody
     public  User  getUser (@PathVariable long id) {
@@ -114,59 +117,49 @@ public class AdminController {
         if (user==null)user= User.builder().id(0L).name("не найден").build();
         return  user;
     }
-
-
-
-
     @PostMapping("/page")
     @ResponseBody
-    public ArticleContent makeArticle(Principal principal, @RequestBody ArticleContent articleContent) {
+    public ResponseEntity makeArticle(Principal principal, @RequestBody Article   article  ) {
         try {
-            Article article = articleRepository.save(articleContent.getArticle());
-            articleContent.setArticle(article);
-
-            return   articleContentRepository.save(articleContent);
+              log.debug(article.toString());
+            return  new ResponseEntity(articleRepository.save(article) , HttpStatus.CREATED);
         }
-   catch (Exception w){log.warn(w.getMessage());
-      return articleContent;
+   catch (Exception w){log.debug(w.getMessage());
+       return  new ResponseEntity( article  , HttpStatus.IM_USED);
    }
 }
     @PostMapping("/category")
     @ResponseBody
     public Category makeCategory(Principal principal, @RequestBody JSONObject jsonObject) {
        Long id= Long.valueOf((Integer) jsonObject.get("id")) ;
+
         Long parentId= Long.valueOf((Integer) jsonObject.get("parentId")) ;
        log.debug(jsonObject.toJSONString());
+
        String name= (String) jsonObject.get("name");
         String icon= (String) jsonObject.get("icon");
        Integer position =(Integer) jsonObject.get("position");
         Category category =null;
         Optional<Category> optional=categoryRepository.findById(id) ;
-      if(optional!=null&&optional.isPresent()){
+      if(optional!=null&optional.isPresent()){
           category=optional.get();
       }
        else category=new Category();
         category.setName(name);
         category.setIcon(icon);
         category.setPosition(position);
-        if (category.getParent()!=null){
-            if ( category.getParent().getId()==parentId)return  categoryRepository.save(category);
-            category.getParent().getChildrenCategory().remove(category);
-            categoryRepository.save(category.getParent());
-        }
-
-
-
         Category categoryParent =null;
-
-        if (parentId==0)categoryParent=categoryRepository.findRoot().get();
+        if (parentId==id)   categoryParent=categoryRepository.findRoot() ;
+       else if (parentId==0)categoryParent=categoryRepository.findRoot() ;
         else  categoryParent=categoryRepository.findById(parentId).get();
         categoryParent.addChild(category);
-        categoryRepository.save(categoryParent);
-
-        return  categoryRepository.save(category);
+       try {
+           categoryRepository.save(category);
+       }catch (
+               Exception e
+       ){log.debug(e.getMessage());}
+        return   category;
     }
-
 
     @Transactional
     @PostMapping("/item")
@@ -180,14 +173,21 @@ public class AdminController {
         String icon=(String) json.get("icon");
         String caption =(String) json.get("caption");
         String name =(String) json.get("name ");
-        Long detailId= Long.valueOf((int) json.get("detailId"));
+        Long detailId=0l;
+        try {
+            detailId=  Long.valueOf((int) json.get("detailId"));
+        }
+          catch (Exception e)  {
+            log.debug(e.getMessage());
+          }
         ItemDetail detail = null;
         Item item = null;
         if (detailId>0){
             Optional<ItemDetail> optional = itemDetailRepository.findById(detailId);
             if(!optional.isEmpty()){
                 detail=optional.get();
-            item= detail.getItem();}
+            item= new Item();
+               }
         }
        else{
             item = Item.builder() .build();
@@ -199,7 +199,7 @@ public class AdminController {
         detail.setCaption(caption);
         item.setName(name);
         item.setIcon(icon);
-        Category root = categoryRepository.findFirstByName("Меню");
+        Category root = categoryRepository.findRoot() ;
         item.setParent(root);
         item.setPrice(price);
         item.setItemDetail(detail);

@@ -44,11 +44,7 @@ public class Order implements Serializable {
     private Profile profile;
 
 
-    @JsonProperty("userId")
-    public Long getUserId() {
-        if (profile == null) return null;
-        return profile.getUserId();
-    }
+
 
     @PrePersist
     private void persistDate() {
@@ -66,7 +62,7 @@ public class Order implements Serializable {
         return "Order{" +
                 "id=" + id +
                 ", status=" + status +
-                ", user=" + getUserId() +
+                ", user=" +id +
                 ", orderItems=" + orderItems +
                 '}';
     }

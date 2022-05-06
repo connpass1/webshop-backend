@@ -1,6 +1,7 @@
 package com.wsh.repo;
 
 import com.wsh.model.Article;
+import com.wsh.model.ArticleInfo;
 import com.wsh.model.ifaces.Nav;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +16,11 @@ import java.util.List;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
-    Page<Article> findByIdIsNotNullOrderByNavAscPositionAsc(Pageable pageable);
+    Page<ArticleInfo> findByIdIsNotNullOrderByNavAscPositionAsc(Pageable pageable);
 
-    @Query("select a from Article a where a.nav = ?1 order by a.position")
-    List<Article> findByNav(@NonNull Nav nav);
+    @Query("select a  from Article a where a.nav = ?1 order by a.position")
+    List<ArticleInfo> findByNav(@NonNull Nav nav);
+
 
 
     boolean existsByIdEquals(@NonNull Long id);

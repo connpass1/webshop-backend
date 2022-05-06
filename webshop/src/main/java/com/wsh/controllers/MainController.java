@@ -26,8 +26,7 @@ public class MainController {
     private UserRepository repoUser;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ArticleContentRepository articleContentRepository;
+
     @Autowired
     private ArticleRepository articleRepository;
     @Autowired
@@ -48,7 +47,7 @@ public class MainController {
         if (id<1){
 
             return   new ResponseEntity(null, HttpStatus.NOT_FOUND);}
-        Optional<ArticleContent> optional = articleContentRepository.findById(id);
+        Optional<Article > optional = articleRepository.findById(id);
         if(optional .isEmpty())return   new ResponseEntity(null, HttpStatus.NOT_FOUND);
         return   new ResponseEntity(optional.get(), HttpStatus.OK);
     }

@@ -12,15 +12,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findById(long id);
 
-    User findByName(String name);
 
     boolean existsByNameEquals(@NonNull String name);
 
     User findByNameEquals(@NonNull String name);
 
-    @Override
-    @SuppressWarnings("unchecked")
-    User save(User user);
 
 }
 

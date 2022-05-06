@@ -1,6 +1,7 @@
 package com.wsh.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wsh.helper.LogListener;
 import com.wsh.model.ifaces.Nav;
 import lombok.*;
@@ -13,10 +14,10 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 @Entity
-@Builder
 @EntityListeners(LogListener.class)
+@AllArgsConstructor
+@Builder
 public class Article implements Serializable   {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +32,13 @@ public class Article implements Serializable   {
     @Enumerated
     @Column(name = "nav", nullable = false)
     private Nav nav=Nav.OTHER;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @Column(length = 50, unique = true, nullable = false)
+    private String title;
+
+
 
     @PrePersist
     public void prePersist() {

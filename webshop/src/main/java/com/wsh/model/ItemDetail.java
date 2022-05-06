@@ -20,7 +20,9 @@ import java.util.Set;
 @EntityListeners(LogListener.class)
 public class ItemDetail implements Serializable {
     @Id
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "itemDetail_seq")
+    Long id;
     private int amount = 0;
     @Column(length = 50)
     private String caption;
@@ -28,8 +30,9 @@ public class ItemDetail implements Serializable {
     private String description;
 
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "item_id")
+
+
+    @OneToOne(mappedBy = "itemDetail", cascade = CascadeType.ALL, optional = false, orphanRemoval = true,fetch = FetchType.LAZY)
     private Item item;
 
     @ElementCollection

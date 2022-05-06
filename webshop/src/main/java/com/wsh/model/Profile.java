@@ -19,11 +19,11 @@ import java.util.Objects;
 @Entity
 @Builder
 public class Profile implements Serializable {
-    @Id
-    @Column(name = "id", nullable = false)
     @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "user_id_seq")
     private Long id;
-
 
     @Column(unique = true, nullable = false)
     private Long phone;
@@ -34,8 +34,9 @@ public class Profile implements Serializable {
    @JsonIgnore
    @Getter(AccessLevel.NONE)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", unique = true,nullable = false)
     private User user;
+
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "profile", orphanRemoval = true)
@@ -51,11 +52,7 @@ public class Profile implements Serializable {
         orders.add(order);
         return this;
     }
-   @Transient
-    public Long getUserId( ){
-          return user.getId();
-      }
-    @Transient
+
     public String getName( ){
         return user.getName();
     }
