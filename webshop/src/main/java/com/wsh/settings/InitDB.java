@@ -35,6 +35,8 @@ public class InitDB {
    private Faker faker = new Faker();
     @PostConstruct
     private void postConstruct() {
+        Category root = categoryRepository.findRoot();
+        if (root != null) return;
         initArticle();
         initUser();
         initCat();
@@ -50,7 +52,7 @@ public class InitDB {
         article= Article.builder().title("Контакты").content("<div>Контакты</div>").name("контакты").icon("contacts").position(2).nav(Nav.MENU).build();
 
         articleRepository.save( article);
-        article= Article.builder().title("Доставка").content("<div>Доставка</div>").name("Доставка").icon("cargo").position(3).nav(Nav.MENU).build();
+        article= Article.builder().title("Доставка").content("<div>Доставка</div>").name("Доставка").icon("delivery").position(3).nav(Nav.MENU).build();
 
         articleRepository.save( article);
 
@@ -79,7 +81,7 @@ public class InitDB {
         addChild(soup,"На рыбном бульоне",1,"fish");
         addChild(soup,"На овощном бульоне",2,"vegetables");
 
-        Category seconds = addChild(root,"Вторые блюда" ,1,"meat" ) ;
+        Category seconds = addChild(root,"Вторые блюда" ,1,"cour" ) ;
         addChild(seconds,"Мясные",0,"meat");
         addChild(seconds,"Рыбные" ,1,"fish");
         addChild(seconds, "Овощные",2,"vegetables");

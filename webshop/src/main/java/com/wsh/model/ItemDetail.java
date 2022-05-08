@@ -1,14 +1,17 @@
 package com.wsh.model;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
 import com.wsh.model.ifaces.Quantity;
+import com.wsh.model.ifaces.Slug;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.jetbrains.annotations.NotNull;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,28 +22,53 @@ import java.util.Set;
 //@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EntityListeners(LogListener.class)
 public class ItemDetail implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "itemDetail_seq")
-    Long id;
-    private int amount = 0;
-    @Column(length = 50)
-    private String caption;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-
-
-
-    @OneToOne(mappedBy = "itemDetail", cascade = CascadeType.ALL, optional = false, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "itemDetail", cascade = CascadeType.ALL, optional = false, orphanRemoval = true, fetch = FetchType.LAZY)
     private Item item;
 
-    @ElementCollection
-    @Column(name = "photo")
-    @CollectionTable(name = "item_detail_photo", joinColumns = @JoinColumn(name = "owner_id"))
-    private Set<String> photo = new LinkedHashSet<>();
+    public void setItem(Item item) {
+        this.item = item;
+        item.setItemDetail(this);
+    }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(name = "photo", columnDefinition = "TEXT")
+    @CollectionTable(name = "item_detail_photo", joinColumns = @JoinColumn(name = "owner_photo_id"))
+    private List<String> photo;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "composite")
+    @CollectionTable(name = "item_detail_composite", joinColumns = @JoinColumn(name = "owner_item_id"))
+    private List<String> composition;
+
+    @Transient
+    public void setComposition(String[] composite) {
+        if (composition == null) composition = new LinkedList<>();
+        else composition.clear();
+        for (String s : composite) composition.add(s);
+
+    }
 
 
+    @Transient
+    public void setPhoto(String[] photos) {
+        if (photo == null) photo = new LinkedList<>();
+        else photo.clear();
+        for (String s : photos) photo.add(s);
+
+    }
+    @JsonProperty("parents")
+    public List<Slug> parents() {
+        Category parent=item.getParent();
+        if (parent == null) return null;
+        return parent.parent();
+    }
     @Override
     public String toString() {
         return "ItemDetail{" +
@@ -65,6 +93,6 @@ public class ItemDetail implements Serializable {
     @PrePersist
 
     public void prePersist() {
-    if (item!=null)id=item.getId();
+        if (item != null) id = item.getId();
     }
 }

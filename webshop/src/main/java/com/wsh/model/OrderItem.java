@@ -1,10 +1,10 @@
 package com.wsh.model;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
 import lombok.*;
+
 import javax.persistence.*;
 
 @NoArgsConstructor

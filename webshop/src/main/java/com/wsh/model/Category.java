@@ -4,13 +4,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Slug;
 import lombok.*;
 import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import static com.wsh.helper.Comparator.categoryComparator;
+import static com.wsh.helper.Comparator.itemComparator;
 
 @Table(name = "Category")
 @AllArgsConstructor
@@ -25,7 +31,7 @@ public class Category implements Serializable {
 
     @Setter(AccessLevel.NONE)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
-    @JoinColumn(name = "cat_id" )
+    @JoinColumn(name = "cat_id")
     private final List<Category> childrenCategory = new LinkedList();
 
     @Setter(AccessLevel.NONE)
@@ -48,33 +54,49 @@ public class Category implements Serializable {
     @Column(length = 25, unique = true)
     private String name;
 
+    @Column(name = "icon", columnDefinition = "TEXT")
     private String icon;
     private Integer position;
 
     @JsonProperty("parent")
-    public String parent() {
+    public List<Slug> parent() {
+
         if (parent == null) return null;
-        if (parent.parent() == null) return "$Меню@1@home";
-        return parent.parent() + "$" + parent.name + '@' + parent.id + '@' + parent.icon;
+        List<  Slug > slugs;
+
+        if (parent.parent() == null) {
+            slugs =new LinkedList<>();
+            Slug slug=Slug.builder().id(1l).icon("home").name("Меню").build();
+            slugs.add(slug);
+            return  slugs;
+        };
+        slugs =new LinkedList<>(parent.parent());
+        Slug slug=Slug.builder().id( parent.id).icon(parent.icon ).name(parent.name ).build();
+        slugs.add(slug);
+        return slugs;
     }
 
     @Transient
     public Category addChild(Category child) {
-        if(child.parent!=null){
+        if (child.parent != null) {
             child.parent.getChildrenCategory().remove(child);
 
         }
         childrenCategory.add(child);
-        Collections.sort(childrenCategory,categoryComparator );
+        Collections.sort(childrenCategory, categoryComparator);
         child.parent = this;
         return this;
     }
 
     @Transient
     public Category addChild(Item child) {
+        if (child.getParent() != null) {
+            child.getParent().getChildrenCategory().remove(child);
+
+        }
         child.setParent(this);
         items.add(child);
-        Collections.sort(childrenCategory,categoryComparator );
+        Collections.sort(items, itemComparator);
         return this;
     }
 
@@ -91,6 +113,7 @@ public class Category implements Serializable {
         child.parent = null;
         return this;
     }
+
     @PrePersist
     public void prePersist() {
         if (position == null) position = 0;

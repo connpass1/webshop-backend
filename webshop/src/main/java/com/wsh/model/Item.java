@@ -1,10 +1,14 @@
 package com.wsh.model;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
+import com.wsh.model.ifaces.Measure;
 import com.wsh.model.ifaces.Quantity;
+import com.wsh.model.ifaces.Slug;
 import lombok.*;
 import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -19,36 +23,36 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class Item implements Serializable {
+
     @Setter(AccessLevel.NONE)
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "itemDetail_id")
+    Long id;
+
+
+    @Column(name = "icon", columnDefinition = "TEXT")
     private String icon;
     @Column(length = 25)
     private String name;
     private int price = 0;
+    private String caption;
+    private int mass = 0;
+    private Measure measure = Measure.гр;
+    @Enumerated
+    @Column(name = "quantity", nullable = false)
+    private Quantity quantity = Quantity.UNLIMITED;
 
 
     @Getter(AccessLevel.NONE)
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true,fetch = FetchType.LAZY)
-    @JoinColumn(name = "itemDetail_id", nullable = false, unique = true )
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemDetail_id", nullable = false, unique = true)
     private ItemDetail itemDetail;
 
     @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "parent_id", nullable = false)
     private Category parent;
-
-    @Enumerated
-    @Column(name = "quantity", nullable = false)
-    private Quantity quantity = Quantity.UNLIMITED;
-
-    @JsonProperty("parent")
-    public String parent() {
-        if (parent.getName().contains("root")) return null;
-        if (parent.parent() == null) return parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
-        return parent.parent() + "$" + parent.getName() + '@' + parent.getId() + '@' + parent.getIcon();
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -57,7 +61,13 @@ public class Item implements Serializable {
         Item item = (Item) o;
         return id != null && Objects.equals(id, item.id);
     }
+    @JsonProperty("parent")
+    public Slug parent() {
+        Category parent =  getParent();
+        if (parent.getName().contains("root")) return null;
+         return Slug.builder().name(parent.getName()).icon(parent.getIcon()).id(parent.getId()).build();
 
+    }
     @Override
     public int hashCode() {
         return getClass().hashCode();
@@ -69,12 +79,4 @@ public class Item implements Serializable {
                 "id=" + id +
                 '}';
     }
-    @PostUpdate
-    @PostPersist
-    public void postPersist() {
-        if (itemDetail!= null)
-        itemDetail.setItem(this);
-    }
-
-
 }

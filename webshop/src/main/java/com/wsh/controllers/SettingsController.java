@@ -24,6 +24,9 @@ public class SettingsController {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+
+    @GetMapping("")
     @ResponseBody
     public ResponseEntity idSettings(Principal principal) {
 

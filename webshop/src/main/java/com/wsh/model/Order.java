@@ -1,7 +1,5 @@
 package com.wsh.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wsh.helper.LogListener;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -34,7 +32,6 @@ public class Order implements Serializable {
     private int status = 0;
 
 
-
     @OneToMany(mappedBy = "order", orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -42,8 +39,6 @@ public class Order implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private Profile profile;
-
-
 
 
     @PrePersist
@@ -62,7 +57,7 @@ public class Order implements Serializable {
         return "Order{" +
                 "id=" + id +
                 ", status=" + status +
-                ", user=" +id +
+                ", user=" + id +
                 ", orderItems=" + orderItems +
                 '}';
     }

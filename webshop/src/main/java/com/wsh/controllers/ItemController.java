@@ -28,7 +28,7 @@ public class ItemController {
     @GetMapping("/{id}")
     @ResponseBody
     public ItemDetail id(@PathVariable long id) {
-        return repoDetail.findById(id);
+        return repoDetail.findByItem_IdEquals(id);
     }
 
     @GetMapping("/list")

@@ -1,6 +1,8 @@
 package com.wsh.controllers;
 
 import com.wsh.model.*;
+import com.wsh.model.ifaces.ItemFull;
+import com.wsh.model.ifaces.Nav;
 import com.wsh.model.ifaces.Quantity;
 import com.wsh.repo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -36,32 +38,32 @@ public class AdminController {
     private OrderRepository orderRepository;
 
 
-    @GetMapping("/pages/{page}")
+    @GetMapping("/pages")
     @ResponseBody
-
-    public Page<ArticleInfo>  pages(@PathVariable int page) {
-
-        Pageable pageable = PageRequest.of(  (page-1), 20);
-        return articleRepository.findByIdIsNotNullOrderByNavAscPositionAsc(pageable);
+    public List<ArticleInfo>  pages( ) {
+        return articleRepository.findByIdIsNotNullOrderByNavAscPositionAsc( );
     }
     @GetMapping("/item/{id}/{cat}")
     @ResponseBody
-    public  ItemDetail  getItem(@PathVariable long id,@PathVariable long cat) {
+    public  ItemDetail   createItem(@PathVariable long id,@PathVariable long cat) {
 
         log.debug("ids"+id+"cat"+cat);
-          if(id>0)   return itemDetailRepository.findById(id);
+          if(id>0)   return itemDetailRepository.findByItem_IdEquals(id);
         Category parent = categoryRepository.findById(cat);
           Item item=Item.builder().parent(parent).quantity(Quantity.UNLIMITED).id(0l).build();
         return     ItemDetail.builder().item(item).build();
     }
+    @GetMapping("/item/{id}")
+    @ResponseBody
+    public  ItemDetail  getItem(@PathVariable long id ) {
+   return itemDetailRepository.findByItem_IdEquals(id);
 
+    }
     @GetMapping("/page/{id}")
     @ResponseBody
     public ResponseEntity  getPage(@PathVariable long id) {
-
-        if (id==0){
-
-            return   new ResponseEntity(Article.builder().build(), HttpStatus.OK);}
+        if (id==0)
+            return   new ResponseEntity(Article.builder().title("").name("").nav(Nav.OTHER).icon("").id(0l).content("").build(), HttpStatus.OK);
         Optional<Article> optional = articleRepository.findById(id);
            if(optional .isEmpty())return   new ResponseEntity(null, HttpStatus.NOT_FOUND);
         return   new ResponseEntity(optional.get(), HttpStatus.OK);
@@ -96,11 +98,16 @@ public class AdminController {
     public  Category group(@PathVariable long id) {
          return categoryRepository.findById(id);
     }
+
+    @GetMapping("/catalog")
+    @ResponseBody
+    public  Category  catalogRoot( ) {
+        return categoryRepository.findRoot() ;
+    }
+
     @GetMapping("/catalog/{id}")
     @ResponseBody
     public  Category  catalog(@PathVariable long  id ) {
-        if(id==0)return categoryRepository.findRoot() ;
-
         return categoryRepository.findById(id);
     }
 
@@ -130,11 +137,9 @@ public class AdminController {
 }
     @PostMapping("/category")
     @ResponseBody
-    public Category makeCategory(Principal principal, @RequestBody JSONObject jsonObject) {
+    public Category makeCategory(Principal principal, @RequestBody JSONObject jsonObject) {  log.debug(jsonObject.toJSONString());
        Long id= Long.valueOf((Integer) jsonObject.get("id")) ;
-
         Long parentId= Long.valueOf((Integer) jsonObject.get("parentId")) ;
-       log.debug(jsonObject.toJSONString());
 
        String name= (String) jsonObject.get("name");
         String icon= (String) jsonObject.get("icon");
@@ -149,68 +154,41 @@ public class AdminController {
         category.setIcon(icon);
         category.setPosition(position);
         Category categoryParent =null;
-        if (parentId==id)   categoryParent=categoryRepository.findRoot() ;
-       else if (parentId==0)categoryParent=categoryRepository.findRoot() ;
+        if (parentId==0)categoryParent=categoryRepository.findRoot() ;
         else  categoryParent=categoryRepository.findById(parentId).get();
         categoryParent.addChild(category);
-       try {
-           categoryRepository.save(category);
-       }catch (
-               Exception e
-       ){log.debug(e.getMessage());}
-        return   category;
+    return   categoryRepository.save(category);
     }
 
     @Transactional
     @PostMapping("/item")
     @ResponseBody
-    public ItemDetail makeItem(Principal principal, @RequestBody JSONObject json) {
-    log.debug(json.toString());
-    int amount= (int) json.get("amount");
-        int quantity= (int) json.get("quantity");
-        int price= (int) json.get("price");
-        String description=(String) json.get("description");
-        String icon=(String) json.get("icon");
-        String caption =(String) json.get("caption");
-        String name =(String) json.get("name ");
-        Long detailId=0l;
-        try {
-            detailId=  Long.valueOf((int) json.get("detailId"));
+    public ItemDetail makeItem(Principal principal, @RequestBody ItemFull itemFull) {
+        log.debug(itemFull.toString());
+        ItemDetail itemDetail;
+        Item item;
+        if(itemFull.getId()>0){
+            itemDetail=itemDetailRepository.findById(itemFull.getId()).get();
+            item=itemDetail.getItem();
+            log.debug(itemDetail.toString());
         }
-          catch (Exception e)  {
-            log.debug(e.getMessage());
-          }
-        ItemDetail detail = null;
-        Item item = null;
-        if (detailId>0){
-            Optional<ItemDetail> optional = itemDetailRepository.findById(detailId);
-            if(!optional.isEmpty()){
-                detail=optional.get();
-            item= new Item();
-               }
+        else{
+            item= new Item ( ) ;
+            itemDetail=new ItemDetail();
+            Category category=categoryRepository.findById(itemFull.getParent().getId()).get();
+            category.addChild(item);
+            itemDetail.setItem(item);
+            categoryRepository.save(category);
         }
-       else{
-            item = Item.builder() .build();
-           detail = ItemDetail.builder() .build();
-       }
-       detail.setDescription(description);
-       detail.setAmount(amount);
-       item.setQuantity(Quantity.values()[quantity]);
-        detail.setCaption(caption);
-        item.setName(name);
-        item.setIcon(icon);
-        Category root = categoryRepository.findRoot() ;
-        item.setParent(root);
-        item.setPrice(price);
-        item.setItemDetail(detail);
-        item=itemRepository.save(item);
-        detail.setId(item.getId());
-        detail.setItem(item);
-        root.addChild(item);
-        detail =  itemDetailRepository.save(detail);
-        log.debug("----------------- "+detail.toString());
-        categoryRepository.save(root);
-            return  detail ;
-    }
+        item.setPrice(itemFull.getPrice());
+        item.setIcon(itemFull.getIcon());
+        item.setName(itemFull.getName());
+        item.setQuantity(itemFull.getQuantity());
+        itemDetail.setDescription(itemFull.getDescription());
+        itemDetail.setPhoto( itemFull.getPhoto() );
+        itemDetail.setComposition( itemFull.getComposition());
+    itemDetail= itemDetailRepository .save(itemDetail);
 
+            return  itemDetail ;
+    }
 }

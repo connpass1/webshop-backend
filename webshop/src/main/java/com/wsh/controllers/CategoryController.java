@@ -27,10 +27,5 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/name/{name}")
-    @ResponseBody
-    public Category name(@PathVariable String name) {
-        return repo.findFirstByName("name");
-    }
 
 }

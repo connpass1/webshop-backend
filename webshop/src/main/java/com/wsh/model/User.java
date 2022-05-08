@@ -1,11 +1,12 @@
 package com.wsh.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.wsh.helper.LogListener;
 import com.wsh.model.ifaces.Role;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class User implements Serializable {
     @Setter(AccessLevel.NONE)
     Long id;
 
-    @Column(length = 25,  unique = true,nullable = false)
+    @Column(length = 25, unique = true, nullable = false)
     private String name;
 
     @JsonIgnore
@@ -34,11 +35,9 @@ public class User implements Serializable {
     private String password;
 
 
-
-
     @Enumerated(EnumType.STRING)
-    @Column( nullable = false)
-    private Role role =Role.USER;
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Override
     public String toString() {

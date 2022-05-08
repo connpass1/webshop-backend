@@ -62,6 +62,9 @@ public class DeleteController {
         Long id=Long.valueOf((Integer)ob.get("id"));
         Category category = categoryRepository.findById(id).get();
         if(category.getParent()==null) return  new ResponseEntity("категория  не удалена"+id, HttpStatus.FORBIDDEN);
+        if( !category.getItems().isEmpty()){
+            itemRepository.deleteAll(category.getItems());
+        }
         categoryRepository.delete( category);
         return  new ResponseEntity("категория удалена"+id, HttpStatus.ACCEPTED);
     }

@@ -31,29 +31,30 @@ public class Profile implements Serializable {
     @Column(length = 50, unique = true)
     private String email;
 
-   @JsonIgnore
-   @Getter(AccessLevel.NONE)
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", unique = true,nullable = false)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
 
 
     @Setter(AccessLevel.NONE)
     @OneToMany(mappedBy = "profile", orphanRemoval = true)
-    private List<Order> orders=new LinkedList<>();
+    private List<Order> orders = new LinkedList<>();
 
-    public void setUser(User user){
-       this.user=user;
-       this.id=user.getId();
-   }
+    public void setUser(User user) {
+        this.user = user;
+        this.id = user.getId();
+    }
+
     @Transient
-    public Profile setOrder( Order order){
-        if (orders==null) orders=new LinkedList<>();
+    public Profile setOrder(Order order) {
+        if (orders == null) orders = new LinkedList<>();
         orders.add(order);
         return this;
     }
 
-    public String getName( ){
+    public String getName() {
         return user.getName();
     }
 

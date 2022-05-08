@@ -15,7 +15,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Item findById(long id);
 
-    Item findFirstByName(String name);
+
 
     Item save(Item item);
 

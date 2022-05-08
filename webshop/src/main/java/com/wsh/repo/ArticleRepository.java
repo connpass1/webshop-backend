@@ -16,7 +16,7 @@ import java.util.List;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
-    Page<ArticleInfo> findByIdIsNotNullOrderByNavAscPositionAsc(Pageable pageable);
+    List<ArticleInfo> findByIdIsNotNullOrderByNavAscPositionAsc( );
 
     @Query("select a  from Article a where a.nav = ?1 order by a.position")
     List<ArticleInfo> findByNav(@NonNull Nav nav);
